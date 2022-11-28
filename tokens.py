@@ -3,10 +3,7 @@ import time
 import uuid
 import os
 
-con = sqlite3.connect(
-    os.path.join('db', "db.db"),
-    check_same_thread=False
-)
+con = sqlite3.connect("/home/mx-flow/PycharmProjects/MirrorManager/db.sqlite", check_same_thread=False)
 cur = con.cursor()
 try:
     cur.execute("CREATE TABLE pair(key TEXT UNIQUE, time TEXT)")
