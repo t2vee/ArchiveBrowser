@@ -70,6 +70,7 @@ async def direct_download(request: Request, __token__: str = None):
 @app.post("/API/v1/GUI/GetDownloadLink")
 async def gen_dl_link(file_uuid: str = None):
     key = await tokens.create()
+    logger.info(f'Generated Download link for File UUID: {file_uuid} with access __token__: {key}')
     return f'/GuiDownload?file_uuid={file_uuid}&__token__={key}'
 
 
