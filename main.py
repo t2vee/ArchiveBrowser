@@ -1,4 +1,4 @@
-import tokens
+import sql
 import logger
 import gc
 import os
@@ -50,8 +50,8 @@ async def file_info(request: Request, file_uuid: str = None):
 
 
 @app.get("/GuiDownload", response_class=HTMLResponse)
-async def guid_download(request: Request, file_uuid: str = None, __token__: str = None):
-    if tokens.get(__token__):
+async def gui_download(request: Request, file_uuid: str = None, __token__: str = None):
+    if sql.get(__token__):
         if files.check_uuid(file_uuid):
             data = await files.grab_file_meta(file_uuid)
             return templates.TemplateResponse("guidownload.html", {"request": request, "file_data": data})
@@ -62,24 +62,26 @@ async def guid_download(request: Request, file_uuid: str = None, __token__: str 
 
 
 @app.get("/DirectDownload")
-async def direct_download(request: Request, __token__: str = None):
-    return "temp"
+async def direct_download(file_uuid: str = None, __token__: str = None):
+    logger.info(f'Direct Download of File Requested. File Info Below')
+    return download_file(file_uuid, __token__)
 
 
 # POST PATHS
 @app.post("/API/v1/GUI/GetDownloadLink")
 async def gen_dl_link(file_uuid: str = None):
-    key = await tokens.create()
+    key = await sql.create()
     logger.info(f'Generated Download link for File UUID: {file_uuid} with access __token__: {key}')
     return f'/GuiDownload?file_uuid={file_uuid}&__token__={key}'
 
 
 @app.post("/API/v1/GUI/DownloadFile")
 async def download_file(file_uuid: str = None, __token__: str = None):
-    if tokens.get(__token__):
+    if sql.get(__token__):
         if files.check_uuid(file_uuid):
             data = await files.grab_file_meta(file_uuid)
             logger.info(f'File Download Started. File UUID: {file_uuid}, File Name: {data[0]}, File Type: {data[2]}')
+            await sql.delete(__token__)
             return FileResponse(path=os.environ.get('ROOT_PATH'), filename=data[0], media_type=data[2])
         m = {'code': 404, 'error': 'File no longer exists. It may of been deleted or moved'}
         logger.warning(m)

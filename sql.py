@@ -3,12 +3,20 @@ import time
 import uuid
 import os
 
-con = sqlite3.connect("/home/mx-flow/PycharmProjects/MirrorManager/db.sqlite", check_same_thread=False)
+con = sqlite3.connect(r"db.sqlite", check_same_thread=False)
 cur = con.cursor()
 try:
     cur.execute("CREATE TABLE pair(key TEXT UNIQUE, time TEXT)")
 except sqlite3.OperationalError as e:
     pass
+
+
+async def get(key: str):
+    res = cur.execute("SELECT * FROM pair WHERE key = '%s'" % (key))
+    result = res.fetchone()
+    if result is None:
+        return {"code": 5001}
+    return {"value": result[1]}
 
 
 async def get(key: str):
