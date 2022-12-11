@@ -1,7 +1,6 @@
 import sqlite3
 import time
 import uuid
-import os
 
 con = sqlite3.connect(r"db.sqlite", check_same_thread=False)
 cur = con.cursor()
@@ -13,25 +12,17 @@ except sqlite3.OperationalError as e:
 
 async def get(key: str):
     res = cur.execute("SELECT * FROM pair WHERE key = '%s'" % (key))
-    result = res.fetchone()
+    result = res.fetchall()
     if result is None:
         return {"code": 5001}
-    return {"value": result[1]}
-
-
-async def get(key: str):
-    res = cur.execute("SELECT * FROM pair WHERE key = '%s'" % (key))
-    result = res.fetchone()
-    if result is None:
-        return {"code": 5001}
-    return {"value": result[1]}
+    return result
 
 
 async def create():
     key = uuid.uuid1()
-    cur.execute("INSERT INTO pair VALUES ('%s', '%s')" % (key, time.time()))
+    cur.execute("INSERT INTO pair VALUES ('%s', '%s')" % (str(key), time.time()))
     con.commit()
-    return {key}
+    return {str(key)}
 
 
 async def delete(key):

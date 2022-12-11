@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+{% block title %}List Directory | MirrorManager{% endblock title %}
+{% block h1title %}Directory Listing of "{{ dir_path }}"{% endblock h1title %}
+{% block content %}
+<ul>
+    {% for entry in dir_info %}
+    <li><!--{{ (request.path + '?dir_path=' if request.path != '/' else '') + dir_path + entry.name }}-->
+        <a href="{{ request.path + '?dir_path=' + dir_path + '/' +  entry.name if dir_path != '/' else request.path + '?dir_path=' + dir_path + entry.name}}">
+            {{ entry.name }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+<br>
+<br>
+
+{% endblock content %}

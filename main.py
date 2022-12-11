@@ -1,16 +1,19 @@
 import sql
-import logger
 import gc
 import os
-import files
+import time
 import uvicorn
+import magic
+from datetime import datetime, timezone
+from os.path import join, dirname
 from dotenv import load_dotenv
-import grab_latest
+import utils
+from utils import Logger
+import mirrors
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse, FileResponse
+from fastapi.responses import HTMLResponse, FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import RedirectResponse
 
 gc.collect(2)
 gc.freeze()
@@ -22,39 +25,57 @@ gen2 = gen2 * 2
 gc.set_threshold(allocs, gen1, gen2)
 
 app = FastAPI()
-load_dotenv()
-# app.mount("/static", StaticFiles(directory="static"), name="static")
+logger = Logger()
+mime = magic.Magic(mime=True)
+dotenv_path = join(dirname(__file__), '.env')
+load_dotenv(dotenv_path)
+app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 
 # GET PATHS
 @app.get("/")
 async def root():
-    return RedirectResponse("/ListDirectory")
+    return RedirectResponse("/ListDirectory?dir_path=/")
 
 
 @app.get("/ListDirectory", response_class=HTMLResponse)
 async def list_dir(request: Request, dir_path: str = r'/public'):
-    dir_info = files.get_dir(dir_path)
-    return templates.TemplateResponse("listdir.html", {"request": request, "dir_info": dir_info})
+    if os.path.exists(f'{os.environ.get("ROOT_PATH")}{dir_path}'):
+        if os.path.isfile(f'{os.environ.get("ROOT_PATH")}{dir_path}'):
+            return RedirectResponse(f'/FileInfo?file_path={dir_path}')
+        dir_info = os.scandir(f'{os.environ.get("ROOT_PATH")}{dir_path}')
+        logger.info(f'Requested List Directory of "{dir_path}"')
+        return templates.TemplateResponse("listdir.html",
+                                          {"request": request, "dir_info": dir_info, "dir_path": dir_path})
+    logger.warning(f'Requested File Directory ("{dir_path}") that does not exist')
+    return templates.TemplateResponse("error.html", {"request": request, "error": 'File Directory does not exist'})
 
 
 @app.get("/FileInfo", response_class=HTMLResponse)
-async def file_info(request: Request, file_uuid: str = None):
-    if files.check_uuid(file_uuid):
-        data = await files.grab_file_meta(file_uuid)
-        return templates.TemplateResponse("fileinfo.html", {"request": request, "file_data": data})
+async def file_info(request: Request, file_path: str = None):
+    if os.path.isfile(f'{os.environ.get("ROOT_PATH")}{file_path}'):
+        filename = os.path.basename(file_path)
+        dir_path = os.path.dirname(file_path).replace('\\', '/')
+        data = os.stat(f'{os.environ.get("ROOT_PATH")}{file_path}')
+        creation_date = datetime.fromtimestamp(data.st_ctime, tz=timezone.utc)
+        modified_date = datetime.fromtimestamp(data.st_mtime, tz=timezone.utc)
+        media_type = mime.from_file(f'{os.environ.get("ROOT_PATH")}{file_path}')
+        logger.info(f'Requested File information for "{file_path}"')
+        return templates.TemplateResponse("fileinfo.html", {"request": request, "file_path": file_path, "filename": filename, "dir_path": dir_path, "creation_date": creation_date, "modified_date": modified_date, "file_size": utils.convert_size(data.st_size), "media_type": media_type})
+    logger.warning(f'Requested File information for Non-Existent file: "{file_path}"')
     return templates.TemplateResponse("error.html", {"request": request, 'error': 'File No Longer Exists. It may '
                                                                                   'of been removed or have moved '
                                                                                   'locations.'})
 
 
 @app.get("/GuiDownload", response_class=HTMLResponse)
-async def gui_download(request: Request, file_uuid: str = None, __token__: str = None):
-    if sql.get(__token__):
-        if files.check_uuid(file_uuid):
-            data = await files.grab_file_meta(file_uuid)
-            return templates.TemplateResponse("guidownload.html", {"request": request, "file_data": data})
+async def gui_download(request: Request, file_path: str = None, __token__: str = None):
+    if await sql.get(__token__):
+        if os.path.isfile(f'{os.environ.get("ROOT_PATH")}{file_path}'):
+            data = os.stat(f'{os.environ.get("ROOT_PATH")}{file_path}')
+            filename = os.path.basename(file_path)
+            return templates.TemplateResponse("guidownload.html", {"request": request, "filename": filename, "file_size": utils.convert_size(data.st_size), "__token__": __token__, "file_path": file_path})
         return templates.TemplateResponse("error.html", {"request": request, 'error': 'File No Longer Exists. It may '
                                                                                       'of been removed or have moved '
                                                                                       'locations.'})
@@ -62,33 +83,52 @@ async def gui_download(request: Request, file_uuid: str = None, __token__: str =
 
 
 @app.get("/DirectDownload")
-async def direct_download(file_uuid: str = None, __token__: str = None):
+async def direct_download(file_path: str = None, __token__: str = None):
     logger.info(f'Direct Download of File Requested. File Info Below')
-    return download_file(file_uuid, __token__)
+    return download_file(file_path, __token__)
 
 
 # POST PATHS
 @app.post("/API/v1/GUI/GetDownloadLink")
-async def gen_dl_link(file_uuid: str = None):
+async def gen_dl_link(file_path: str = None):
     key = await sql.create()
-    logger.info(f'Generated Download link for File UUID: {file_uuid} with access __token__: {key}')
-    return f'/GuiDownload?file_uuid={file_uuid}&__token__={key}'
+    logger.info(f'Generated Download link for File Path: {file_path} with access __token__: {key}')
+    sanitized_key = str(key).replace("'", '').replace('{', '').replace('}', '')
+    return f'/GuiDownload?file_path={file_path}&__token__={sanitized_key}'
 
 
-@app.post("/API/v1/GUI/DownloadFile")
-async def download_file(file_uuid: str = None, __token__: str = None):
-    if sql.get(__token__):
-        if files.check_uuid(file_uuid):
-            data = await files.grab_file_meta(file_uuid)
-            logger.info(f'File Download Started. File UUID: {file_uuid}, File Name: {data[0]}, File Type: {data[2]}')
-            await sql.delete(__token__)
-            return FileResponse(path=os.environ.get('ROOT_PATH'), filename=data[0], media_type=data[2])
-        m = {'code': 404, 'error': 'File no longer exists. It may of been deleted or moved'}
+@app.post("/API/v1/GUI/DownloadFile", response_class=FileResponse)
+async def download_file(file_path: str = None, __token__: str = None):
+    sqlres = await sql.get(__token__)
+    if sqlres[0] != 5001:
+        if sqlres[0] is not None: #< time.time(): TODO Fix time checking for tokens
+            if os.path.isfile(f'{os.environ.get("ROOT_PATH")}{file_path}'):
+                await sql.delete(__token__)
+                filename = f"t2vArchive-MirrorManager_{os.path.basename(file_path)}"
+                media_type = mime.from_file(f'{os.environ.get("ROOT_PATH")}{file_path}')
+                headers = {'Content-Disposition': f'attachment; filename="{filename}"'}
+                logger.info(
+                    f'File Download Started. File UUID: {file_path}, File Name: {filename}, File Type: {media_type}')
+                return FileResponse(path=f"{os.environ.get('ROOT_PATH')}{file_path}", headers=headers, filename=filename, media_type=media_type)
+            m = {'code': 404, 'error': 'File no longer exists. It may of been deleted or moved'}
+            logger.warning(m)
+            return m
+        m = {'code': 401, 'error': 'Download Token has Expired'}
         logger.warning(m)
         return m
     m = {'code': 401, 'error': 'Invalid Download Token!'}
     logger.warning(m)
     return m
+
+
+# MIDDLEWARE PATHS
+@app.middleware("http")
+async def time_response(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    response.headers["X-Process-Time"] = str(round(process_time * 1000, 3))
+    return response
 
 
 if __name__ == "__main__":

@@ -1,10 +1,39 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="utf-8">
     <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="https://t2v.city/res/style/base.min.css">
+    <link rel="stylesheet" href="https://t2v.city/res/style/social.min.css">
+    <style>{% block css %}{% endblock %}</style>
 </head>
 <body>
-    <main>
-    {% block content %}{% endblock %}
-    </main>
+    <div class="page">
+        <header>
+            <a href="/"><img class="logo" src="https://cdn.t2v.city/content/KQgCslvqJtiMCkBKQmZp/t2v.ch/img/t2vmirrorservices_minified.png" alt="logo" /></a>
+            <h1>{% block h1title %}{% endblock %}</h1>
+        </header>
+        <main style="text-align: justify;">
+            <div id="privacy" style="padding: 15px">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+        <br>
+        <footer>
+            <p><span><a style="cursor: pointer;" onclick="history.back()"><</a></span> | <span><a href="/">home</a></span> | <span><a style="cursor: pointer;" onclick="history.forward()">></a></span></p>
+            <p>Powered by MirrorManager - 2022 &copy; t2v</p>
+            <br><p>Page Loaded in <span id="pageloadtime">0</span> ms</p>
+        </footer>
+    </div>
+    <script>
+        function updateLocalElement() {
+            const pltEle = document.getElementById('pageloadtime');
+            let time = performance.timing;
+            let pageloadtime = time.loadEventStart - time.navigationStart;
+            pltEle.textContent = pageloadtime;
+        }
+
+        window.onload = updateLocalElement()
+    </script>
 </body>
 </html>

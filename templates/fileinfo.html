@@ -1,0 +1,79 @@
+{% extends 'layout.html' %}
+{% block title %}File Info | MirrorManager{% endblock title %}
+{% block h1title %}File Information for "{{ filename }}"{% endblock h1title %}
+{% block css %}
+.loginbutton {
+    font-size: 15px;
+    padding: 3px;
+    margin-left: 10px;
+    background-color:
+    white; color: #181A1B;
+    border-radius: 5px;
+    text-decoration: none;
+    border-bottom: 2px solid grey;
+    cursor: pointer;
+}
+.loginbutton:hover {
+    color: white;
+    background-color: grey;
+    border-top: 1px solid grey;
+    border-bottom: 0px;
+    -webkit-box-shadow: inset 0px 4px 0px 0px #0A0E12;
+    -moz-box-shadow: inset 0px 4px 0px 0px #0A0E12;
+    box-shadow: inset 0px 0px 4px 0px #0A0E12;
+    cursor: pointer;
+}
+{% endblock css %}
+{% block content %}
+ <table>
+  <tr>
+    <td>File Name: </td>
+    <td>{{ filename }}</td>
+  </tr>
+  <tr>
+    <td>Directory: </td>
+    <td>{{ dir_path }}</td>
+  </tr>
+  <tr>
+    <td>File Size: </td>
+    <td>{{ file_size }}</td>
+  </tr>
+  <tr>
+    <td>Mime Type: </td>
+    <td>{{ media_type }}</td>
+  </tr>
+  <tr>
+    <td>Last Modified Data: </td>
+    <td>{{ modified_date }}</td>
+  </tr>
+  <tr>
+    <td>Creation Date: </td>
+    <td>{{ creation_date }}</td>
+  </tr>
+</table>
+<br>
+<a class="loginbutton" id="downloadLink" onclick="getDownloadLink()">Generate Download Link</a>
+<script>
+    function getDownloadLink() {
+        const requests = new XMLHttpRequest();
+        if (!requests) {
+          console.log('Failed to create XMLHttpRequest');
+          return false;
+        }
+        requests.open('POST', `/API/v1/GUI/GetDownloadLink?file_path={{ dir_path + '/' + filename }}`);
+        requests.send();
+        requests.onreadystatechange = function() {
+          if (requests.readyState === XMLHttpRequest.DONE) {
+            if (requests.status === 200) {
+              const downloadLink = document.getElementById('downloadLink');
+              downloadLink.setAttribute("href", requests.responseText.replace(/['"]+/g, ''));
+              downloadLink.onclick = null;
+              downloadLink.textContent = 'Download File';
+            } else {
+              console.log('Failed to Contact API. Check Status');
+            }
+          }
+        }
+    }
+</script>
+{% endblock content %}
