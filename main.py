@@ -1,38 +1,30 @@
-import sql
-import gc
 import os
 import time
 import uvicorn
-import magic
-from datetime import datetime, timezone
+import utils
+from magic import Magic
 from os.path import join, dirname
 from dotenv import load_dotenv
-import utils
-from utils import Logger
-import mirrors
-from fastapi import FastAPI, Request
+from datetime import datetime, timezone, timedelta
+from fastapi import FastAPI, Request, APIRouter, Depends
+from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import HTMLResponse, FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-
-gc.collect(2)
-gc.freeze()
-
-allocs, gen1, gen2 = gc.get_threshold()
-allocs = 50_000
-gen1 = gen1 * 2
-gen2 = gen2 * 2
-gc.set_threshold(allocs, gen1, gen2)
+from fastapi_login.exceptions import InvalidCredentialsException
 
 app = FastAPI()
-logger = Logger()
-mime = magic.Magic(mime=True)
+logger = utils.Logger()
+skm = utils.SqlKeysManagement()
+aum = utils.AdministratorUserManagement()
+mime = Magic(mime=True)
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 
+# START USER PATHS
 # GET PATHS
 @app.get("/")
 async def root():
@@ -62,7 +54,11 @@ async def file_info(request: Request, file_path: str = None):
         modified_date = datetime.fromtimestamp(data.st_mtime, tz=timezone.utc)
         media_type = mime.from_file(f'{os.environ.get("ROOT_PATH")}{file_path}')
         logger.info(f'Requested File information for "{file_path}"')
-        return templates.TemplateResponse("fileinfo.html", {"request": request, "file_path": file_path, "filename": filename, "dir_path": dir_path, "creation_date": creation_date, "modified_date": modified_date, "file_size": utils.convert_size(data.st_size), "media_type": media_type})
+        return templates.TemplateResponse("fileinfo.html",
+                                          {"request": request, "file_path": file_path, "filename": filename,
+                                           "dir_path": dir_path, "creation_date": creation_date,
+                                           "modified_date": modified_date,
+                                           "file_size": utils.convert_size(data.st_size), "media_type": media_type})
     logger.warning(f'Requested File information for Non-Existent file: "{file_path}"')
     return templates.TemplateResponse("error.html", {"request": request, 'error': 'File No Longer Exists. It may '
                                                                                   'of been removed or have moved '
@@ -71,11 +67,13 @@ async def file_info(request: Request, file_path: str = None):
 
 @app.get("/GuiDownload", response_class=HTMLResponse)
 async def gui_download(request: Request, file_path: str = None, __token__: str = None):
-    if await sql.get(__token__):
+    if await skm.get(__token__):
         if os.path.isfile(f'{os.environ.get("ROOT_PATH")}{file_path}'):
             data = os.stat(f'{os.environ.get("ROOT_PATH")}{file_path}')
             filename = os.path.basename(file_path)
-            return templates.TemplateResponse("guidownload.html", {"request": request, "filename": filename, "file_size": utils.convert_size(data.st_size), "__token__": __token__, "file_path": file_path})
+            return templates.TemplateResponse("guidownload.html", {"request": request, "filename": filename,
+                                                                   "file_size": utils.convert_size(data.st_size),
+                                                                   "__token__": __token__, "file_path": file_path})
         return templates.TemplateResponse("error.html", {"request": request, 'error': 'File No Longer Exists. It may '
                                                                                       'of been removed or have moved '
                                                                                       'locations.'})
@@ -88,10 +86,78 @@ async def direct_download(file_path: str = None, __token__: str = None):
     return download_file(file_path, __token__)
 
 
-# POST PATHS
+# END USER PATHS
+# START ADMINISTRATOR PATHS
+
+
+from fastapi_login import LoginManager
+
+apd = utils.AdministratorPanelDB()
+admin_router = APIRouter(prefix="/AdministratorArea")
+manager = LoginManager(os.environ.get('SECRET'), token_url='/auth/token')
+
+
+class NotAuthenticatedException(Exception):
+    pass
+
+def exc_handler(request, exc):
+    return RedirectResponse(url='/login')
+manager.not_authenticated_exception = NotAuthenticatedException
+app.add_exception_handler(NotAuthenticatedException, exc_handler)
+
+@manager.user_loader()
+def load_user(email: str):
+    user = aum.grab_usr(email)
+    return user
+
+# GET PATHS
+@admin_router.get("/")
+async def admin_root():
+    return RedirectResponse("Panel")
+
+
+@admin_router.get("/OAuth/Login")
+async def admin_root(request: Request):
+    return templates.TemplateResponse("administrator/panel.html", {"request": request})
+
+
+@app.post('/auth/token')
+def login(data: OAuth2PasswordRequestForm = Depends()):
+    email = data.username
+    password = data.password
+    user = load_user(email)
+    if not user:
+        raise InvalidCredentialsException
+    elif password != user['password']:
+        raise InvalidCredentialsException
+
+    access_token = manager.create_access_token(
+        data=dict(sub=email), expires=timedelta(hours=12)
+    )
+    return {'access_token': access_token, 'token_type': 'bearer'}
+
+
+@admin_router.get("/Panel", response_class=HTMLResponse)
+async def admin_root(request: Request):
+    return templates.TemplateResponse("administrator/panel.html", {"request": request})
+
+
+@admin_router.get("/Panel/GitRepositories", response_class=HTMLResponse)
+async def admin_root(request: Request, ):
+    return templates.TemplateResponse("administrator/git.panel.html", {"request": request})
+
+
+@admin_router.get("/Panel/FileMirrors", response_class=HTMLResponse)
+async def admin_root(request: Request, ):
+    return templates.TemplateResponse("administrator/files.panel.html", {"request": request})
+
+
+# END ADMINISTRATOR PATHS
+
+# API PATHS
 @app.post("/API/v1/GUI/GetDownloadLink")
 async def gen_dl_link(file_path: str = None):
-    key = await sql.create()
+    key = await skm.create()
     logger.info(f'Generated Download link for File Path: {file_path} with access __token__: {key}')
     sanitized_key = str(key).replace("'", '').replace('{', '').replace('}', '')
     return f'/GuiDownload?file_path={file_path}&__token__={sanitized_key}'
@@ -99,17 +165,18 @@ async def gen_dl_link(file_path: str = None):
 
 @app.post("/API/v1/GUI/DownloadFile", response_class=FileResponse)
 async def download_file(file_path: str = None, __token__: str = None):
-    sqlres = await sql.get(__token__)
+    sqlres = await skm.get(__token__)
     if sqlres[0] != 5001:
-        if sqlres[0] is not None: #< time.time(): TODO Fix time checking for tokens
+        if sqlres[0] is not None:  # < time.time(): TODO Fix time checking for tokens
             if os.path.isfile(f'{os.environ.get("ROOT_PATH")}{file_path}'):
-                await sql.delete(__token__)
+                await skm.delete(__token__)
                 filename = f"t2vArchive-MirrorManager_{os.path.basename(file_path)}"
                 media_type = mime.from_file(f'{os.environ.get("ROOT_PATH")}{file_path}')
                 headers = {'Content-Disposition': f'attachment; filename="{filename}"'}
                 logger.info(
                     f'File Download Started. File UUID: {file_path}, File Name: {filename}, File Type: {media_type}')
-                return FileResponse(path=f"{os.environ.get('ROOT_PATH')}{file_path}", headers=headers, filename=filename, media_type=media_type)
+                return FileResponse(path=f"{os.environ.get('ROOT_PATH')}{file_path}", headers=headers,
+                                    filename=filename, media_type=media_type)
             m = {'code': 404, 'error': 'File no longer exists. It may of been deleted or moved'}
             logger.warning(m)
             return m
@@ -119,6 +186,14 @@ async def download_file(file_path: str = None, __token__: str = None):
     m = {'code': 401, 'error': 'Invalid Download Token!'}
     logger.warning(m)
     return m
+
+
+@app.post("/API/v1/ADMINISTRATOR/GetDownloadLink")
+async def gen_dl_link(file_path: str = None):
+    key = await skm.create()
+    logger.info(f'Generated Download link for File Path: {file_path} with access __token__: {key}')
+    sanitized_key = str(key).replace("'", '').replace('{', '').replace('}', '')
+    return f'/GuiDownload?file_path={file_path}&__token__={sanitized_key}'
 
 
 # MIDDLEWARE PATHS
@@ -131,5 +206,6 @@ async def time_response(request: Request, call_next):
     return response
 
 
+app.include_router(admin_router)
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
