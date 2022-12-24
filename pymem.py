@@ -1,6 +1,8 @@
 import gc
 
-if __name__ == "__pymem__":
+
+def optimise_mem():
+    print("LOG:      (pymem.py) - Python Garbage Collection Optimised")
     gc.collect(2)
     gc.freeze()
 

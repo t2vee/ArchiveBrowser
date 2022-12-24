@@ -1,3 +1,4 @@
+import json
 import math
 import sqlite3
 import time
@@ -31,7 +32,7 @@ class bcolors:
 
 class Logger:
     def __init__(self):
-        print('Logger Initialized')
+        pass
 
     def critical(self, message="Empty Message. You shouldn't see this!"):
         print('LOG_LEVEL: [DEBUG] LOG_TYPE [CRITICAL] ' + f"{bcolors.FAIL}{message}{bcolors.ENDC}")
@@ -51,7 +52,8 @@ class Logger:
 
 try:
     cur.execute("CREATE TABLE pair(key TEXT UNIQUE, time TEXT)")
-    cur.execute("CREATE TABLE git(repo_name TEXT UNIQUE, repo_url TEXT, update_interval TEXT)")
+    cur.execute("CREATE TABLE git(repo_author TEXT, repo_name TEXT UNIQUE, repo_url TEXT, monitored INTEGER, "
+                "update_interval INTEGER)")
     cur.execute("CREATE TABLE mirrors(name TEXT UNIQUE, source TEXT, update_interval TEXT)")
 except sqlite3.OperationalError as e:
     pass
@@ -59,7 +61,7 @@ except sqlite3.OperationalError as e:
 
 class SqlKeysManagement:
     def __init__(self):
-        print('SqlKeysManagement Initialized')
+        pass
 
     async def get(self, key: str):
         res = cur.execute("SELECT * FROM pair WHERE key = '%s'" % (key))
@@ -86,7 +88,7 @@ class SqlKeysManagement:
 
 class AdministratorUserManagement:
     def __init__(self):
-        print('AdministratorUserManagement Initialized')
+        pass
 
     async def grab_usr(self, key: str):
         res = cur.execute("SELECT * FROM pair WHERE key = '%s'" % (key))
@@ -98,14 +100,15 @@ class AdministratorUserManagement:
 
 class AdministratorPanelDB:
     def __init__(self):
-        print('AdministratorPanelDB Initialized')
+        pass
 
-    async def get_git_repos(self, key: str):
-        res = cur.execute("SELECT * FROM pair WHERE key = '%s'" % (key))
+    async def get_git_repos(self):
+        res = cur.execute("SELECT * FROM git")
         result = res.fetchall()
+        data = json.dumps(result)
         if result is None:
             return {"code": 5001}
-        return result
+        return data
 
     async def get_git_repo_info(self, key: str):
         res = cur.execute("SELECT * FROM pair WHERE key = '%s'" % (key))
@@ -114,11 +117,11 @@ class AdministratorPanelDB:
             return {"code": 5001}
         return result
 
-    async def clone_new_git_repo(self):
-        key = uuid.uuid1()
-        cur.execute("INSERT INTO pair VALUES ('%s', '%s')" % (str(key), time.time()))
+    async def create_new_git_instance(self, repo_data):
+        repo_data_json = json.loads(repo_data)
+        cur.execute("INSERT INTO git VALUES ('%s', '%s', '%s', '%s')" % (repo_data_json[1], repo_data_json[2], repo_data_json[3], repo_data_json[4]))
         con.commit()
-        return {str(key)}
+        return 'repo added'
 
     async def delete_git_repo(self, key):
         res = cur.execute("SELECT * FROM pair WHERE key = '%s'" % (key))
@@ -129,3 +132,10 @@ class AdministratorPanelDB:
         con.commit()
         return {"message": "The specified key and its data was successfully deleted."}
 
+
+def loaded():
+    cur.execute("DELETE FROM git")
+    cur.execute("INSERT INTO git VALUES ('%s', '%s', '%s', '%s', '%s')" % ("t2v", "MirrorManager", "https://ttea.dev/t2v/MirrorManager.git", 1, 48))
+    cur.execute("INSERT INTO git VALUES ('%s', '%s', '%s', '%s', '%s')" % ("linustorvads", "linux", "https://github.com/linustorvads/linux.git", 1, 4))
+    con.commit()
+    print('LOG:      (utils.py) - Program Utilities Loaded')

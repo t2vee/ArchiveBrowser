@@ -1,0 +1,176 @@
+{% extends 'administrator/layout.html' %}
+{% block title %}Home{% endblock title %}
+{% block css %}
+.overlaypage {
+    margin: 1rem auto;
+    width: 35em;
+    height: 280px;
+    max-width: 95vw;
+    text-align: center;
+    padding: 20px;
+    border: 1px solid white;
+    border-radius: 15px;
+    user-select: none !important;
+}
+.social {
+    border: 1px solid #fff;
+    width: 150px;
+    padding: 7px 0;
+}
+.logo {
+    margin-bottom: 10px;
+    height: 100px;
+}
+main {
+    border: 1px solid white;
+    margin-bottom: 5px;
+}
+.link-list {
+    justify-content: space-between;
+    margin: 10px 0px 20px 0px;
+}
+.contact {
+    justify-content: space-between;
+    margin: 10px 0px 10px 0px;
+}
+.row {
+    display: flex;
+    justify-content: space-between;
+    margin: 30px 0px 30px 0px;
+}
+#social {
+    cursor: pointer;
+}
+#close {
+    cursor: pointer;
+    font-size: 30px;
+}
+.icon {
+    width: 100px;
+}
+.loginbutton {
+    font-size: 15px;
+    padding: 3px;
+    margin-left: 10px;
+    background-color:
+    white; color: #181A1B;
+    border-radius: 5px;
+    text-decoration: none;
+    border-bottom: 2px solid grey;
+    cursor: pointer;
+}
+.loginbutton:hover {
+    color: white;
+    background-color: grey;
+    border-top: 1px solid grey;
+    border-bottom: 0px;
+    -webkit-box-shadow: inset 0px 4px 0px 0px #0A0E12;
+    -moz-box-shadow: inset 0px 4px 0px 0px #0A0E12;
+    box-shadow: inset 0px 0px 4px 0px #0A0E12;
+    cursor: pointer;
+}
+.loader {
+    width: 50px;
+}
+table, th, td {
+  border:1px solid white;
+}
+table {
+    margin: 20px;
+}
+{% endblock css %}
+{% block h1title %}Manage Git Repository Mirrors{% endblock h1title %}
+{% block content %}
+    <div id="overlay">
+        <div class="overlaypage">
+            <div class="row" id="button-row">
+                <div id="linklist">
+                    <a class="loginbutton" id="clone" onclick="beginCloneRepoSequence()">Clone New Repo</a>
+                    <a class="loginbutton" id="list" onclick="listReposScreen()">List Repos</a>
+                    <a class="loginbutton" id="monitors" onclick="getDownloadLink()">Manage Repo Monitors</a>
+                </div>
+            </div>
+            <div id="container"></div>
+            <div class="row">
+                <img id="loader" src="/static/imgs/loader.gif" alt="loader" style="display: none;" class="loader">
+                <p id="textField"></p>
+
+            </div>
+        </div>
+        <script>
+                    function listReposScreen() {
+                        document.getElementById('loader').setAttribute("style", "display: visible;")
+                        const requests = new XMLHttpRequest();
+                        if (!requests) {
+                          console.log('Failed to create XMLHttpRequest');
+                          return false;
+                        }
+                        requests.open('POST', `/API/v1/ADMINISTRATOR/ListGitRepos`);
+                        requests.send();
+                        requests.onreadystatechange = function() {
+                          if (requests.readyState === XMLHttpRequest.DONE) {
+                            if (requests.status === 200) {
+                              document.getElementById('loader').setAttribute("style", "display: none;");
+                              document.getElementById('list').setAttribute("style", "display: none;");
+                              let json_response = JSON.parse(requests.responseText);
+                              if (json_response.code === 5001) {
+                                  document.getElementById('textField').textContent = "There are currently no git repositories set up";
+                              } else {
+                                       let container = document.getElementById("container");
+                                   for (let item of json_response) {
+                                          let table = document.createElement("table");
+
+                                          let row1 = table.insertRow();
+                                          let cell1 = row1.insertCell();
+                                          cell1.innerHTML = "Username:";
+                                          let cell2 = row1.insertCell();
+                                          cell2.innerHTML = item[0];
+
+                                          let row2 = table.insertRow();
+                                          let cell3 = row2.insertCell();
+                                          cell3.innerHTML = "Repository:";
+                                          let cell4 = row2.insertCell();
+                                          cell4.innerHTML = item[1];
+
+                                          let row3 = table.insertRow();
+                                          let cell5 = row3.insertCell();
+                                          cell5.innerHTML = "URL:";
+                                          let cell6 = row3.insertCell();
+                                          cell6.innerHTML = item[2];
+
+                                          let row4 = table.insertRow();
+                                          let cell7 = row4.insertCell();
+                                          cell7.innerHTML = "Monitored?:";
+                                          let cell8 = row4.insertCell();
+                                          cell8.innerHTML = checkIntForTrueOrFalse(item);
+
+                                          let row5 = table.insertRow();
+                                          let cell9 = row5.insertCell();
+                                          cell9.innerHTML = "Update Interval:";
+                                          let cell10 = row5.insertCell();
+                                          cell10.innerHTML = 'every ' + item[4] + ' hour(s)';
+
+                                          container.appendChild(table);
+                                      }
+                              }
+
+                            } else {
+                              document.getElementById('list').textContent = "Failed to reach API. Retry?";
+                              document.getElementById('loader').setAttribute("style", "display: none;");
+                            }
+                          }
+                        }
+                    }
+                    function checkIntForTrueOrFalse(item) {
+                        if (item[3] === 0) {
+                                          return 'False'
+                                      } else {
+                                          return 'True'
+                                      }
+                    }
+                    function beginCloneRepoSequence() {
+
+                    }
+        </script>
+    </div>
+{% endblock content %}

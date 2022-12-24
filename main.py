@@ -2,21 +2,23 @@ import os
 import time
 import uvicorn
 import utils
+import json
+import pymem
 from magic import Magic
 from os.path import join, dirname
 from dotenv import load_dotenv
 from datetime import datetime, timezone, timedelta
-from fastapi import FastAPI, Request, APIRouter, Depends
+from fastapi import FastAPI, Request, APIRouter, Depends, Form
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import HTMLResponse, FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi_login import LoginManager
 from fastapi_login.exceptions import InvalidCredentialsException
 
 app = FastAPI()
 logger = utils.Logger()
 skm = utils.SqlKeysManagement()
-aum = utils.AdministratorUserManagement()
 mime = Magic(mime=True)
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -89,26 +91,29 @@ async def direct_download(file_path: str = None, __token__: str = None):
 # END USER PATHS
 # START ADMINISTRATOR PATHS
 
-
-from fastapi_login import LoginManager
-
+aum = utils.AdministratorUserManagement()
 apd = utils.AdministratorPanelDB()
 admin_router = APIRouter(prefix="/AdministratorArea")
-manager = LoginManager(os.environ.get('SECRET'), token_url='/auth/token')
+manager = LoginManager(os.environ.get('SECRET'), token_url='/OAuth/Token')
 
 
 class NotAuthenticatedException(Exception):
     pass
 
+
 def exc_handler(request, exc):
-    return RedirectResponse(url='/login')
+    return RedirectResponse(url='/OAuth/Login')
+
+
 manager.not_authenticated_exception = NotAuthenticatedException
 app.add_exception_handler(NotAuthenticatedException, exc_handler)
+
 
 @manager.user_loader()
 def load_user(email: str):
     user = aum.grab_usr(email)
     return user
+
 
 # GET PATHS
 @admin_router.get("/")
@@ -121,7 +126,7 @@ async def admin_root(request: Request):
     return templates.TemplateResponse("administrator/panel.html", {"request": request})
 
 
-@app.post('/auth/token')
+@app.post('/OAuth/Token')
 def login(data: OAuth2PasswordRequestForm = Depends()):
     email = data.username
     password = data.password
@@ -137,25 +142,27 @@ def login(data: OAuth2PasswordRequestForm = Depends()):
     return {'access_token': access_token, 'token_type': 'bearer'}
 
 
-@admin_router.get("/Panel", response_class=HTMLResponse)
+@admin_router.get("/OAuth/Logout")
 async def admin_root(request: Request):
     return templates.TemplateResponse("administrator/panel.html", {"request": request})
 
 
-@admin_router.get("/Panel/GitRepositories", response_class=HTMLResponse)
-async def admin_root(request: Request, ):
-    return templates.TemplateResponse("administrator/git.panel.html", {"request": request})
-
-
-@admin_router.get("/Panel/FileMirrors", response_class=HTMLResponse)
-async def admin_root(request: Request, ):
-    return templates.TemplateResponse("administrator/files.panel.html", {"request": request})
+@admin_router.get("/Panel", response_class=HTMLResponse)
+async def admin_root(request: Request, __action__: str = None):
+    if __action__ == 'GitRepositories':
+        return templates.TemplateResponse("administrator/git.panel.html", {"request": request})
+    elif __action__ == 'FileMirrors':
+        return templates.TemplateResponse("administrator/files.panel.html", {"request": request})
+    return templates.TemplateResponse("administrator/panel.html", {"request": request})
 
 
 # END ADMINISTRATOR PATHS
-
 # API PATHS
-@app.post("/API/v1/GUI/GetDownloadLink")
+# USER ROUTER
+user_api = APIRouter(prefix="/API/v1/GUI")
+
+
+@user_api.post("/GetDownloadLink")
 async def gen_dl_link(file_path: str = None):
     key = await skm.create()
     logger.info(f'Generated Download link for File Path: {file_path} with access __token__: {key}')
@@ -163,7 +170,7 @@ async def gen_dl_link(file_path: str = None):
     return f'/GuiDownload?file_path={file_path}&__token__={sanitized_key}'
 
 
-@app.post("/API/v1/GUI/DownloadFile", response_class=FileResponse)
+@user_api.post("/DownloadFile", response_class=FileResponse)
 async def download_file(file_path: str = None, __token__: str = None):
     sqlres = await skm.get(__token__)
     if sqlres[0] != 5001:
@@ -188,12 +195,38 @@ async def download_file(file_path: str = None, __token__: str = None):
     return m
 
 
-@app.post("/API/v1/ADMINISTRATOR/GetDownloadLink")
-async def gen_dl_link(file_path: str = None):
-    key = await skm.create()
-    logger.info(f'Generated Download link for File Path: {file_path} with access __token__: {key}')
-    sanitized_key = str(key).replace("'", '').replace('{', '').replace('}', '')
-    return f'/GuiDownload?file_path={file_path}&__token__={sanitized_key}'
+# ADMIN API ROUTER
+admin_api = APIRouter(prefix="/API/v1/ADMINISTRATOR")
+
+
+@admin_api.post("/CloneNewGitRepo")
+async def clone_new_repo(git_endpoint: str = None, monitor_repo: bool = False):
+    clone_date = timedelta
+    return "success"
+
+
+@admin_api.post("/DeleteGitRepo")
+async def delete_repo(git_endpoint: str = None, monitor_repo: bool = False):
+    clone_date = timedelta
+    if monitor_repo:
+        return RedirectResponse("/AdministratorArea/GitRepositories?__action__=MonitorNewGitRepo")
+    return "success"
+
+
+@admin_api.post("/ListGitRepos")
+async def clone_new_repo():
+    response = await apd.get_git_repos()
+    json_res = json.loads(response)
+    if json_res[0] == 5001:
+        return {"message": "There are currently no git repositories set up", "code": 5001}
+    return json_res
+
+
+@admin_api.post("/GetGitRepoInfo")
+async def clone_new_repo(git_endpoint: str = None):
+    response = apd.get_git_repo_info(git_endpoint)
+    json_res = json.loads(response)
+    return json_res
 
 
 # MIDDLEWARE PATHS
@@ -206,6 +239,12 @@ async def time_response(request: Request, call_next):
     return response
 
 
+app.include_router(user_api)
+app.include_router(admin_api)
 app.include_router(admin_router)
+
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    pymem.optimise_mem()
+    utils.loaded()
+    print('LOG:      (main.py) - Starting MirrorManager process')
+    uvicorn.run(app, host="127.0.0.1", port=8000)
