@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+{% block title %}Home | MirrorManager{% endblock title %}
+{% block h1title %}Home of t2v Archival Services{% endblock h1title %}
+{% block content %}
+            <div class="row">
+                <div class="social">
+                    <img src="/static/imgs/git.png" alt="github" class="icon" />
+                    <a href="/AdministratorArea/Panel?__action__=GitRepositories"><h3>Manage Git Mirrors <span><img style="width: 15px;" src="/static/imgs/external_link.png" alt="external_link"></span></h3></a>
+                </div>
+                <div class="social">
+                    <img src="/static/imgs/files.png" alt="discord" class="icon" />
+                    <a href="/AdministratorArea/Panel?__action__=FileMirrors"><h3>Manage File Mirrors <span><img style="width: 15px;" src="/static/imgs/external_link.png" alt="external_link"></span></h3></a>
+                </div>
+                <div class="social">
+                    <img src="/static/imgs/users.png" alt="cursedtwitch" class="icon" />
+                    <a href="/AdministratorArea/Panel?__action__=UserManagement"><h3>Manage Site Users <span><img style="width: 15px;" src="/static/imgs/external_link.png" alt="external_link"></span></h3></a>
+                </div>
+            </div>
+<br>
+<br>
+
+{% endblock content %}

@@ -1,10 +1,12 @@
 {% extends 'administrator/layout.html' %}
-{% block title %}Home{% endblock title %}
+{% block title %}Manage Git Repositories{% endblock title %}
 {% block css %}
+.overlay {
+}
 .overlaypage {
     margin: 1rem auto;
     width: 35em;
-    height: 280px;
+    height: auto;
     max-width: 95vw;
     text-align: center;
     padding: 20px;
@@ -73,10 +75,13 @@ main {
     width: 50px;
 }
 table, th, td {
-  border:1px solid white;
+    border-radius: 10px;
+    text-align:
 }
 table {
-    margin: 20px;
+    margin-bottom: 20px;
+    border: 1px solid white;
+    width: 100%;
 }
 {% endblock css %}
 {% block h1title %}Manage Git Repository Mirrors{% endblock h1title %}
@@ -87,7 +92,7 @@ table {
                 <div id="linklist">
                     <a class="loginbutton" id="clone" onclick="beginCloneRepoSequence()">Clone New Repo</a>
                     <a class="loginbutton" id="list" onclick="listReposScreen()">List Repos</a>
-                    <a class="loginbutton" id="monitors" onclick="getDownloadLink()">Manage Repo Monitors</a>
+                    <a class="loginbutton" id="view" href="/Git">Visit Git Frontend</a>
                 </div>
             </div>
             <div id="container"></div>
@@ -98,14 +103,33 @@ table {
             </div>
         </div>
         <script>
+                    function cloneGitRepoFormScreen() {
+                        resetGitHome()
+                        document.getElementById('clone').setAttribute("style", "display: none;");
+                        let container = document.getElementById('container')
+                        container.innerHTML = `
+                        <div style="text-align: left; margin-left: 30px;">
+                            <form method="post" action="/API/v1/ADMIN/CloneNewGitRepo">
+                                <label for="git_endpoint">Git Endpoint</label>
+                                <input name="git_endpoint" placeholder="Example: https://ttea.dev/t2v/mm" type="url">
+                                <br><label for="monitor_repo">Monitor Repo?</label>
+                                <input type="checkbox" name="monitor_repo" checked="checked" onchange="displayMonitorInterval(this.value)">
+                                <br><label for="monitor_interval" id="monitor_interval">Monitor Interval (in hours)</label>
+                                <input name="monitor_interval" placeholder="Example: 36" type="number" id="monitor_interval_input">
+                                <br><button type="submit" class="loginbutton">Clone Repo</button>
+                            </form>
+                        </div>
+                        `
+                    }
                     function listReposScreen() {
+                        resetGitHome()
                         document.getElementById('loader').setAttribute("style", "display: visible;")
                         const requests = new XMLHttpRequest();
                         if (!requests) {
                           console.log('Failed to create XMLHttpRequest');
                           return false;
                         }
-                        requests.open('POST', `/API/v1/ADMINISTRATOR/ListGitRepos`);
+                        requests.open('POST', `/API/v1/ADMIN/ListGitRepos`);
                         requests.send();
                         requests.onreadystatechange = function() {
                           if (requests.readyState === XMLHttpRequest.DONE) {
@@ -122,33 +146,38 @@ table {
 
                                           let row1 = table.insertRow();
                                           let cell1 = row1.insertCell();
-                                          cell1.innerHTML = "Username:";
+                                          cell1.innerHTML = "URL: ";
+                                          cell1.setAttribute('style', 'max-width: 75px;')
                                           let cell2 = row1.insertCell();
                                           cell2.innerHTML = item[0];
 
                                           let row2 = table.insertRow();
                                           let cell3 = row2.insertCell();
-                                          cell3.innerHTML = "Repository:";
+                                          cell3.innerHTML = "User/Repo: ";
+                                          cell3.setAttribute('style', 'max-width: 75px;')
                                           let cell4 = row2.insertCell();
                                           cell4.innerHTML = item[1];
 
                                           let row3 = table.insertRow();
                                           let cell5 = row3.insertCell();
-                                          cell5.innerHTML = "URL:";
+                                          cell5.innerHTML = "Monitored?: ";
+                                          cell5.setAttribute('style', 'max-width: 75px;')
                                           let cell6 = row3.insertCell();
-                                          cell6.innerHTML = item[2];
+                                          cell6.innerHTML = checkIntForTrueOrFalse(item);
 
                                           let row4 = table.insertRow();
                                           let cell7 = row4.insertCell();
-                                          cell7.innerHTML = "Monitored?:";
+                                          cell7.innerHTML = "Update Interval: ";
+                                          cell7.setAttribute('style', 'max-width: 75px;')
                                           let cell8 = row4.insertCell();
-                                          cell8.innerHTML = checkIntForTrueOrFalse(item);
+                                          cell8.innerHTML = 'every ' + item[3] + ' hour(s)';
 
                                           let row5 = table.insertRow();
                                           let cell9 = row5.insertCell();
-                                          cell9.innerHTML = "Update Interval:";
+                                          cell9.innerHTML = "Creation Date: ";
+                                          cell9.setAttribute('style', 'max-width: 75px;')
                                           let cell10 = row5.insertCell();
-                                          cell10.innerHTML = 'every ' + item[4] + ' hour(s)';
+                                          cell10.innerHTML = item[4];
 
                                           container.appendChild(table);
                                       }
@@ -162,14 +191,34 @@ table {
                         }
                     }
                     function checkIntForTrueOrFalse(item) {
-                        if (item[3] === 0) {
+                        console.log(item[2])
+                        if (item[2] === 0) {
                                           return 'False'
                                       } else {
                                           return 'True'
                                       }
                     }
+                    let onoff = false;
+                    function displayMonitorInterval(value) {
+                        console.log(value)
+                        if (onoff) {
+                            document.getElementById('monitor_interval').setAttribute('style', '')
+                            document.getElementById('monitor_interval_input').setAttribute('style', '')
+                            onoff = false;
+                        } else {
+                            document.getElementById('monitor_interval').setAttribute('style', 'display: none;')
+                            document.getElementById('monitor_interval_input').setAttribute('style', 'display: none;')
+                            onoff = true;
+                        }
+                    }
                     function beginCloneRepoSequence() {
-
+                        cloneGitRepoFormScreen()
+                    }
+                    function resetGitHome() {
+                        document.getElementById('clone').setAttribute("style", "");
+                        document.getElementById('list').setAttribute("style", "");
+                        document.getElementById('view').setAttribute("style", "");
+                        document.getElementById("container").innerHTML = '';
                     }
         </script>
     </div>

@@ -6,6 +6,9 @@
     <link rel="stylesheet" href="https://t2v.city/res/style/base.min.css">
     <link rel="stylesheet" href="https://t2v.city/res/style/social.min.css">
     <style>{% block css %}{% endblock %}</style>
+    <style>
+
+    </style>
 </head>
 <body>
     <div class="page">
@@ -14,14 +17,14 @@
             <h1>{% block h1title %}{% endblock %}</h1>
         </header>
         <main style="text-align: justify;">
-            <div id="privacy" style="padding: 15px">
+            <div id="privacy" style="padding: 15px;">
                 {% block content %}{% endblock %}
             </div>
         </main>
         <br>
         <footer>
             <p><span><a style="cursor: pointer;" onclick="history.back()"><</a></span> | <span><a href="/">home</a></span> | <span><a style="cursor: pointer;" onclick="history.forward()">></a></span></p>
-            <p>Powered by MirrorManager - 2022 &copy; t2v</p>
+            <p>Powered by<span><a href="https://ttea.dev/t2v/mm">MirrorManager</a></span>- 2022 &copy; t2v</p>
             <br><p>Page Loaded in <span id="pageloadtime">0</span> ms</p>
         </footer>
     </div>

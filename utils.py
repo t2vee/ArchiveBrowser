@@ -19,15 +19,15 @@ def convert_size(size_bytes):
 
 
 class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
+    HEADER = "\033[95m"
+    OKBLUE = "\033[94m"
+    OKCYAN = "\033[96m"
+    OKGREEN = "\033[92m"
+    WARNING = "\033[93m"
+    FAIL = "\033[91m"
+    ENDC = "\033[0m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
 
 
 class Logger:
@@ -35,26 +35,45 @@ class Logger:
         pass
 
     def critical(self, message="Empty Message. You shouldn't see this!"):
-        print('LOG_LEVEL: [DEBUG] LOG_TYPE [CRITICAL] ' + f"{bcolors.FAIL}{message}{bcolors.ENDC}")
+        print(
+            "LOG_LEVEL: [DEBUG] LOG_TYPE [CRITICAL] "
+            + f"{bcolors.FAIL}{message}{bcolors.ENDC}"
+        )
 
     def warning(self, message="Empty Message. You shouldn't see this!"):
-        print('LOG_LEVEL: [DEBUG] LOG_TYPE [WARNING] ' + f"{bcolors.WARNING}{message}{bcolors.ENDC}")
+        print(
+            "LOG_LEVEL: [DEBUG] LOG_TYPE [WARNING] "
+            + f"{bcolors.WARNING}{message}{bcolors.ENDC}"
+        )
 
     def info(self, message="Empty Message. You shouldn't see this!"):
-        print('LOG_LEVEL: [DEBUG] LOG_TYPE [INFO] ' + f"{bcolors.OKGREEN}{message}{bcolors.ENDC}")
+        print(
+            "LOG_LEVEL: [DEBUG] LOG_TYPE [INFO] "
+            + f"{bcolors.OKGREEN}{message}{bcolors.ENDC}"
+        )
 
     def instruction(self, message="Empty Message. You shouldn't see this!"):
-        print('LOG_LEVEL: [DEBUG] LOG_TYPE [INSTRUCTION] ' + f"{bcolors.UNDERLINE}{message}{bcolors.ENDC}")
+        print(
+            "LOG_LEVEL: [DEBUG] LOG_TYPE [INSTRUCTION] "
+            + f"{bcolors.UNDERLINE}{message}{bcolors.ENDC}"
+        )
 
     def dev(self, message="Empty Message. You shouldn't see this!"):
-        print('LOG_LEVEL: [DEBUG] LOG_TYPE [DEVELOPMENT] ' + f"{bcolors.BOLD}{message}{bcolors.ENDC}")
+        print(
+            "LOG_LEVEL: [DEBUG] LOG_TYPE [DEVELOPMENT] "
+            + f"{bcolors.BOLD}{message}{bcolors.ENDC}"
+        )
 
 
 try:
     cur.execute("CREATE TABLE pair(key TEXT UNIQUE, time TEXT)")
-    cur.execute("CREATE TABLE git(repo_author TEXT, repo_name TEXT UNIQUE, repo_url TEXT, monitored INTEGER, "
-                "update_interval INTEGER)")
-    cur.execute("CREATE TABLE mirrors(name TEXT UNIQUE, source TEXT, update_interval TEXT)")
+    cur.execute(
+        "CREATE TABLE git(git_endpoint TEXT, user_repo TEXT UNIQUE, monitored TEXT, update_interval INTEGER, "
+        "clone_data TEXT) "
+    )
+    cur.execute(
+        "CREATE TABLE mirrors(name TEXT UNIQUE, source TEXT, update_interval TEXT)"
+    )
 except sqlite3.OperationalError as e:
     pass
 
@@ -110,18 +129,26 @@ class AdministratorPanelDB:
             return {"code": 5001}
         return data
 
-    async def get_git_repo_info(self, key: str):
-        res = cur.execute("SELECT * FROM pair WHERE key = '%s'" % (key))
+    async def get_git_repo_info(self, git_endpoint: str):
+        res = cur.execute("SELECT * FROM git WHERE git_endpoint = '%s'" % (git_endpoint))
         result = res.fetchall()
         if result is None:
             return {"code": 5001}
         return result
 
     async def create_new_git_instance(self, repo_data):
-        repo_data_json = json.loads(repo_data)
-        cur.execute("INSERT INTO git VALUES ('%s', '%s', '%s', '%s')" % (repo_data_json[1], repo_data_json[2], repo_data_json[3], repo_data_json[4]))
+        cur.execute(
+            "INSERT INTO git VALUES ('%s', '%s', '%s', '%s', '%s')"
+            % (
+                repo_data[0],
+                repo_data[1],
+                repo_data[2],
+                repo_data[3],
+                repo_data[4],
+            )
+        )
         con.commit()
-        return 'repo added'
+        return "repo added"
 
     async def delete_git_repo(self, key):
         res = cur.execute("SELECT * FROM pair WHERE key = '%s'" % (key))
@@ -134,8 +161,14 @@ class AdministratorPanelDB:
 
 
 def loaded():
-    cur.execute("DELETE FROM git")
-    cur.execute("INSERT INTO git VALUES ('%s', '%s', '%s', '%s', '%s')" % ("t2v", "MirrorManager", "https://ttea.dev/t2v/MirrorManager.git", 1, 48))
-    cur.execute("INSERT INTO git VALUES ('%s', '%s', '%s', '%s', '%s')" % ("linustorvads", "linux", "https://github.com/linustorvads/linux.git", 1, 4))
-    con.commit()
-    print('LOG:      (utils.py) - Program Utilities Loaded')
+    #cur.execute("DELETE FROM git")
+    #cur.execute(
+    #    "INSERT INTO git VALUES ('%s', '%s', '%s', '%s', '%s')"
+    #    % ("t2v/MirrorManager", "https://ttea.dev/t2v/MirrorManager.git", 1, 48, 'yes')
+    #)
+    #cur.execute(
+    #    "INSERT INTO git VALUES ('%s', '%s', '%s', '%s', '%s')"
+    #    % ("linustorvads/linux", "https://github.com/linustorvads/linux.git", 1, 4, 'yes')
+    #)
+    #con.commit()
+    print("LOG:      (utils.py) - Program Utilities Loaded")

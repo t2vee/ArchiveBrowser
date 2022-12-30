@@ -23,11 +23,6 @@ header {
     background: #232323;
     color: #ccc;
 }
-
-.logo {
-    letter-spacing: 3px;
-}
-
 .nav {
     display: flex;
     justify-content: space-around;
@@ -44,12 +39,14 @@ header {
     text-decoration: none;
     font-size: 1.2em;
 }
-
-.burger {
-    font-size: 1.2em;
-    display: none;
+.page {
+    max-width: 95vw;
+    text-align: center;
+    margin: 0;
+    position: absolute;
+    left: 50%;
+    display: contents;
 }
-
 @media screen and (max-width: 678px) {
     .burger {
         display: block;
@@ -95,7 +92,7 @@ header {
         <br>
         <footer>
             <p><span><a style="cursor: pointer;" onclick="history.back()"><</a></span> | <span><a href="/AdministratorArea/Panel">home</a></span> | <span><a style="cursor: pointer;" onclick="history.forward()">></a></span></p>
-            <p>Powered by MirrorManager - 2022 &copy; t2v</p>
+            <p>Powered by<span><a href="https://ttea.dev/t2v/mm">MirrorManager</a></span>- 2022 &copy; t2v</p>
             <p>Page Loaded in <span id="pageloadtime">0</span> ms</p>
         </footer>
     </div>
