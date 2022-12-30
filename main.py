@@ -2,7 +2,7 @@ import os
 import time
 import uvicorn
 import utils
-import pymem
+import initialize
 from apis import user_api, admin_api, download_file
 from magic import Magic
 from os.path import join, dirname
@@ -220,12 +220,18 @@ def favicon():
     return FileResponse(favicon_path)
 
 
+@app.get("/sentry-debug")
+async def trigger_error():
+    division_by_zero = 1 / 0
+
+
 app.include_router(user_api)
 app.include_router(admin_api)
 app.include_router(admin_router)
 
 if __name__ == "__main__":
-    pymem.optimise_mem()
+    initialize.optimise_mem()
+    initialize.start_sentry_sdk()
     utils.loaded()
     print("LOG:      (main.py) - Starting MirrorManager process")
     uvicorn.run(app, host="127.0.0.1", port=8000)
