@@ -66,9 +66,9 @@ admin_api = APIRouter(prefix="/API/v1/ADMIN")
 
 @admin_api.post("/CloneNewGitRepo")
 async def clone_new_repo(
-    git_endpoint: str = Form(),
-    monitor_repo: str = Form(0),
-    monitor_interval: int = Form(0),
+        git_endpoint: str = Form(),
+        monitor_repo: str = Form(0),
+        monitor_interval: int = Form(0),
 ):
     git_url = urlparse(git_endpoint)
     try:
@@ -92,7 +92,7 @@ async def clone_new_repo(
             "error": "Failed to add repo to internal database due to a internal server error",
             "code": 500,
         }
-    return "success"
+    return "success"  # TODO fix response handling to post request
 
 
 @admin_api.post("/DeleteGitRepo")
@@ -119,7 +119,6 @@ async def delete_repo(git_endpoint: str = None):
 async def list_git_repos():
     response = await apd.get_git_repos()
     json_res = json.loads(response)
-    print(json_res)
     if json_res[0] == 5001:
         return {
             "message": "There are currently no git repositories set up",

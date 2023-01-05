@@ -34,31 +34,36 @@ class Logger:
     def __init__(self):
         pass
 
-    def critical(self, message="Empty Message. You shouldn't see this!"):
+    @staticmethod
+    def critical(message):
         print(
             "LOG_LEVEL: [DEBUG] LOG_TYPE [CRITICAL] "
             + f"{bcolors.FAIL}{message}{bcolors.ENDC}"
         )
 
-    def warning(self, message="Empty Message. You shouldn't see this!"):
+    @staticmethod
+    def warning(message):
         print(
             "LOG_LEVEL: [DEBUG] LOG_TYPE [WARNING] "
             + f"{bcolors.WARNING}{message}{bcolors.ENDC}"
         )
 
-    def info(self, message="Empty Message. You shouldn't see this!"):
+    @staticmethod
+    def info(message):
         print(
             "LOG_LEVEL: [DEBUG] LOG_TYPE [INFO] "
             + f"{bcolors.OKGREEN}{message}{bcolors.ENDC}"
         )
 
-    def instruction(self, message="Empty Message. You shouldn't see this!"):
+    @staticmethod
+    def instruction(message):
         print(
             "LOG_LEVEL: [DEBUG] LOG_TYPE [INSTRUCTION] "
             + f"{bcolors.UNDERLINE}{message}{bcolors.ENDC}"
         )
 
-    def dev(self, message="Empty Message. You shouldn't see this!"):
+    @staticmethod
+    def dev(message):
         print(
             "LOG_LEVEL: [DEBUG] LOG_TYPE [DEVELOPMENT] "
             + f"{bcolors.BOLD}{message}{bcolors.ENDC}"
@@ -121,7 +126,8 @@ class AdministratorPanelDB:
     def __init__(self):
         pass
 
-    async def get_git_repos(self):
+    @staticmethod
+    async def get_git_repos():
         res = cur.execute("SELECT * FROM git")
         result = res.fetchall()
         data = json.dumps(result)
@@ -129,14 +135,16 @@ class AdministratorPanelDB:
             return {"code": 5001}
         return data
 
-    async def get_git_repo_info(self, git_endpoint: str):
+    @staticmethod
+    async def get_git_repo_info(git_endpoint: str):
         res = cur.execute("SELECT * FROM git WHERE git_endpoint = '%s'" % (git_endpoint))
         result = res.fetchall()
         if result is None:
             return {"code": 5001}
         return result
 
-    async def create_new_git_instance(self, repo_data):
+    @staticmethod
+    async def create_new_git_instance(repo_data):
         cur.execute(
             "INSERT INTO git VALUES ('%s', '%s', '%s', '%s', '%s')"
             % (
@@ -150,25 +158,29 @@ class AdministratorPanelDB:
         con.commit()
         return "repo added"
 
-    async def delete_git_repo(self, key):
-        res = cur.execute("SELECT * FROM pair WHERE key = '%s'" % (key))
+    @staticmethod
+    async def delete_git_repo(git_endpoint):
+        res = cur.execute("SELECT * FROM git WHERE git_endpoint = '%s'" % (git_endpoint))
         result = res.fetchone()
         if result is None:
-            return {"code": 5003}
-        cur.execute("DELETE FROM pair WHERE key = '%s'" % (key))
-        con.commit()
+            return {"code": 500, "error": "Entry does not exist"}
+        try:
+            cur.execute("DELETE FROM git WHERE git_endpoint = '%s'" % (git_endpoint))
+            con.commit()
+        except:
+            return {"code": 500, "error": "Failed to delete sql entry"}
         return {"message": "The specified key and its data was successfully deleted."}
 
 
 def loaded():
-    #cur.execute("DELETE FROM git")
-    #cur.execute(
+    # cur.execute("DELETE FROM git")
+    # cur.execute(
     #    "INSERT INTO git VALUES ('%s', '%s', '%s', '%s', '%s')"
     #    % ("t2v/MirrorManager", "https://ttea.dev/t2v/MirrorManager.git", 1, 48, 'yes')
-    #)
-    #cur.execute(
+    # )
+    # cur.execute(
     #    "INSERT INTO git VALUES ('%s', '%s', '%s', '%s', '%s')"
     #    % ("linustorvads/linux", "https://github.com/linustorvads/linux.git", 1, 4, 'yes')
-    #)
-    #con.commit()
+    # )
+    # con.commit()
     print("LOG:      (utils.py) - Program Utilities Loaded")

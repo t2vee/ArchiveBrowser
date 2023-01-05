@@ -79,9 +79,18 @@ table, th, td {
     text-align:
 }
 table {
+    text-align: left;
     margin-bottom: 20px;
     border: 1px solid white;
     width: 100%;
+}
+.pointer {
+    cursor: pointer;
+}
+#confirm_delete {
+    font-size: 14px;
+    padding: 0 9px;
+    color: #fff;
 }
 {% endblock css %}
 {% block h1title %}Manage Git Repository Mirrors{% endblock h1title %}
@@ -145,40 +154,30 @@ table {
                                           let table = document.createElement("table");
 
                                           let row1 = table.insertRow();
-                                          let cell1 = row1.insertCell();
-                                          cell1.innerHTML = "URL: ";
-                                          cell1.setAttribute('style', 'max-width: 75px;')
-                                          let cell2 = row1.insertCell();
-                                          cell2.innerHTML = item[0];
+                                          row1.insertCell().innerHTML = "URL: ";
+                                          row1.insertCell().innerHTML = item[0];
 
                                           let row2 = table.insertRow();
-                                          let cell3 = row2.insertCell();
-                                          cell3.innerHTML = "User/Repo: ";
-                                          cell3.setAttribute('style', 'max-width: 75px;')
-                                          let cell4 = row2.insertCell();
-                                          cell4.innerHTML = item[1];
+                                          row2.insertCell().innerHTML = "User/Repo: ";
+                                          row2.insertCell().innerHTML = item[1];
 
                                           let row3 = table.insertRow();
-                                          let cell5 = row3.insertCell();
-                                          cell5.innerHTML = "Monitored?: ";
-                                          cell5.setAttribute('style', 'max-width: 75px;')
-                                          let cell6 = row3.insertCell();
-                                          cell6.innerHTML = checkIntForTrueOrFalse(item);
+                                          row3.insertCell().innerHTML = "Monitored?: ";
+                                          row3.insertCell().innerHTML = checkIntForTrueOrFalse(item);
 
                                           let row4 = table.insertRow();
-                                          let cell7 = row4.insertCell();
-                                          cell7.innerHTML = "Update Interval: ";
-                                          cell7.setAttribute('style', 'max-width: 75px;')
-                                          let cell8 = row4.insertCell();
-                                          cell8.innerHTML = 'every ' + item[3] + ' hour(s)';
+                                          row4.insertCell().innerHTML = "Update Interval: ";
+                                          row4.insertCell().innerHTML = 'every ' + item[3] + ' hour(s)';
 
                                           let row5 = table.insertRow();
-                                          let cell9 = row5.insertCell();
-                                          cell9.innerHTML = "Creation Date: ";
-                                          cell9.setAttribute('style', 'max-width: 75px;')
-                                          let cell10 = row5.insertCell();
-                                          cell10.innerHTML = item[4];
+                                          row5.insertCell().innerHTML = "Creation Date: ";
+                                          row5.insertCell().innerHTML = item[4];
 
+                                          let row6 = table.insertRow();
+                                          row6.insertCell().innerHTML = "Delete Repo: "
+                                          let cell = row6.insertCell();
+                                          cell.innerHTML = "<a id='trash_icon' onclick='confirmGitDelete()' class='pointer'><img style='width: 15px;' src='/static/imgs/trash.png' alt='trash'></a><a id='confirm_delete'></a><a id='cancel_delete' class='pointer' onclick='cancelDelete()' style='display: none;'>cancel</a>";
+                                          cell.setAttribute('style', 'display: flex;')
                                           container.appendChild(table);
                                       }
                               }
@@ -208,8 +207,19 @@ table {
                         } else {
                             document.getElementById('monitor_interval').setAttribute('style', 'display: none;')
                             document.getElementById('monitor_interval_input').setAttribute('style', 'display: none;')
+                            document.getElementById('monitor_interval_input').value = '';
                             onoff = true;
                         }
+                    }
+                    function confirmGitDelete() {
+                        document.getElementById('confirm_delete').innerText = 'Confirm Deletion?';
+                        document.getElementById('cancel_delete').setAttribute('style', '')
+                        document.getElementById('trash_icon').setAttribute('onclick' ,'gitDelete()');
+                    }
+                    function cancelDelete() {
+                        document.getElementById('confirm_delete').innerText = '';
+                        document.getElementById('cancel_delete').setAttribute('style', 'display: none;')
+                        document.getElementById('trash_icon').setAttribute('onclick' ,'confirmGitDelete()');
                     }
                     function beginCloneRepoSequence() {
                         cloneGitRepoFormScreen()
