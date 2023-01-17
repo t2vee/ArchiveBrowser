@@ -1,19 +1,12 @@
 import os
-import git
 import utils
-import json
-import shutil
 from magic import Magic
-from urllib.parse import urlparse
-from datetime import datetime
-from fastapi import APIRouter, Form
-from fastapi.responses import FileResponse, RedirectResponse
+from fastapi import APIRouter
+from fastapi.responses import FileResponse
 
 mime = Magic(mime=True)
 logger = utils.Logger()
 skm = utils.SqlKeysManagement()
-aum = utils.AdministratorUserManagement()
-apd = utils.AdministratorPanelDB()
 user_api = APIRouter(prefix="/API/v1/GUI")
 
 
@@ -58,77 +51,3 @@ async def download_file(file_path: str = None, __token__: str = None):
     m = {"code": 401, "error": "Invalid Download Token!"}
     logger.warning(m)
     return m
-
-
-# ADMIN API ROUTER
-admin_api = APIRouter(prefix="/API/v1/ADMIN")
-
-
-@admin_api.post("/CloneNewGitRepo")
-async def clone_new_repo(
-        git_endpoint: str = Form(),
-        monitor_repo: str = Form(0),
-        monitor_interval: int = Form(0),
-):
-    git_url = urlparse(git_endpoint)
-    try:
-        git.Repo.clone_from(git_endpoint, f"{os.environ.get('ROOT_PATH')}/GitStorage/{git_url.path.lstrip('/')}")
-    except:
-        logger.critical(f"Cloning of Git Repo {git_endpoint} Failed.")
-        return {"error": "Git Endpoint URL is invalid or this repository already exists", "code": 500}
-    clone_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    git_array = [
-        git_endpoint,
-        git_url.path.lstrip("/"),
-        monitor_repo,
-        monitor_interval,
-        clone_date,
-    ]
-    try:
-        await apd.create_new_git_instance(git_array)
-    except:
-        await delete_repo(git_endpoint)
-        return {
-            "error": "Failed to add repo to internal database due to a internal server error",
-            "code": 500,
-        }
-    return "success"  # TODO fix response handling to post request
-
-
-@admin_api.post("/DeleteGitRepo")
-async def delete_repo(git_endpoint: str = None):
-    git_url = urlparse(git_endpoint)
-    try:
-        shutil.rmtree(f"{os.environ.get('ROOT_PATH')}{git_url.path.lstrip('/')}")
-    except:
-        return {
-            "error": "Failed to delete Repo directory due to a internal server error",
-            "code": 500,
-        }
-    try:
-        await apd.delete_git_repo(git_endpoint)
-    except:
-        return {
-            "error": "Failed to delete Repo from internal database due to a internal server error",
-            "code": 500,
-        }
-    return "success"
-
-
-@admin_api.post("/ListGitRepos")
-async def list_git_repos():
-    response = await apd.get_git_repos()
-    json_res = json.loads(response)
-    if json_res[0] == 5001:
-        return {
-            "message": "There are currently no git repositories set up",
-            "code": 5001,
-        }
-    return json_res
-
-
-@admin_api.post("/ModifyGitMonitorSettings")
-async def clone_new_repo(git_endpoint: str = None):
-    response = await apd.get_git_repo_info(git_endpoint)
-    json_res = json.loads(response)
-    return json_res
