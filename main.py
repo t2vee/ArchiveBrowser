@@ -3,7 +3,7 @@ import time
 import uvicorn
 import utils
 import initialize
-from apis import user_api, admin_api, download_file
+from apis import user_api, download_file
 from magic import Magic
 from os.path import join, dirname
 from dotenv import load_dotenv

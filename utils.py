@@ -1,7 +1,11 @@
+import json
 import math
 import sqlite3
 import time
 import uuid
+import git
+import os
+from urllib.parse import urlparse
 
 con = sqlite3.connect(r"db.sqlite", check_same_thread=False)
 cur = con.cursor()
@@ -103,6 +107,15 @@ class SqlKeysManagement:
         con.commit()
         return {"message": "The specified key and its data was successfully deleted."}
 
+
+async def load_git_config():
+    f = open('configs/git.json')
+    config = json.load(f)
+    for i in config:
+       git_url = urlparse(i["info"]["url"])
+       git.Repo.clone_from(i["info"]["url"], f"{os.environ.get('ROOT_PATH')}/GitStorage/{git_url.path.lstrip('/')}")
+    f.close()
+    return "temp"
 
 
 def loaded():

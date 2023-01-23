@@ -1,6 +1,22 @@
 {
-  "id": 0,
-  "info": {
-    "url": "https://ttea.dev/t2v/MirrorManager"
+  "MirrorManager": {
+    "id": 0,
+    "info": {
+      "url": "https://ttea.dev/t2v/mm"
+    },
+    "config": {
+      "monitor": true,
+      "interval": 12
+    }
+  },
+  "Linux": {
+    "id": 1,
+    "info": {
+      "url": "https://github.com/linustorvads/linux"
+    },
+    "config": {
+      "monitor": false,
+      "interval": null
+    }
   }
 }
