@@ -151,7 +151,7 @@ app.include_router(user_api)
 
 if __name__ == "__main__":
     initialize.optimise_mem()
-    initialize.start_sentry_sdk()
+    #initialize.start_sentry_sdk()
     utils.loaded()
     print("LOG:      (main.py) - Starting MirrorManager process")
     uvicorn.run(app, host="127.0.0.1", port=8000)

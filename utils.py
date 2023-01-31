@@ -112,11 +112,15 @@ async def load_git_config():
     f = open('configs/git.json')
     config = json.load(f)
     for i in config:
-       git_url = urlparse(i["info"]["url"])
-       git.Repo.clone_from(i["info"]["url"], f"{os.environ.get('ROOT_PATH')}/GitStorage/{git_url.path.lstrip('/')}")
+        try:
+            git_url = urlparse(i["info"]["url"])
+            git.Repo.clone_from(i["info"]["url"], f"{os.environ.get('ROOT_PATH')}/GitStorage/{git_url.path.lstrip('/')}")
+        except:
+            print(f'Initial Git clone failed. URI: {i["info"]["url"]}')
+            pass
     f.close()
     return "temp"
 
 
-def loaded():
+async def loaded():
     print("LOG:      (utils.py) - Program Utilities Loaded")
