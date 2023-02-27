@@ -4,7 +4,7 @@ import sentry_sdk
 
 
 def start_sentry_sdk():
-    if os.environ.get('PRODUCTION'):
+    if os.environ.get("PRODUCTION"):
         traces_sample_rate = 0.5
     else:
         traces_sample_rate = 1.0

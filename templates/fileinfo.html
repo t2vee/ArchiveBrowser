@@ -43,16 +43,21 @@
     <td>{{ media_type }}</td>
   </tr>
   <tr>
-    <td>Last Modified Data: </td>
+    <td>Last Modified Date: </td>
     <td>{{ modified_date }}</td>
   </tr>
   <tr>
     <td>Creation Date: </td>
     <td>{{ creation_date }}</td>
   </tr>
+  <tr>
+    <td>File sha256: </td>
+    <td>{{ file_sha }}</td>
+  </tr>
 </table>
 <br>
 <a class="loginbutton" id="downloadLink" onclick="getDownloadLink()">Generate Download Link</a>
+<a class="loginbutton" id="curlcommand" onclick="copyCurlCommand()" style="visibility: hidden;">Copy cURL Command</a>
 <script>
     function getDownloadLink() {
         const requests = new XMLHttpRequest();
@@ -66,14 +71,23 @@
           if (requests.readyState === XMLHttpRequest.DONE) {
             if (requests.status === 200) {
               const downloadLink = document.getElementById('downloadLink');
-              downloadLink.setAttribute("href", requests.responseText.replace(/['"]+/g, ''));
+              let responseLink = requests.responseText.replace(/['"]+/g, '');
+              downloadLink.setAttribute("href", responseLink);
               downloadLink.onclick = null;
-              downloadLink.textContent = 'Download File';
+              downloadLink.textContent = 'GUI Download';
+              const curlDownload = document.getElementById('curlcommand');
+              curlDownload.setAttribute('style', 'visibility: visible;');
+              curlDownload.setAttribute('data', responseLink);
             } else {
               console.log('Failed to Contact API. Check Status');
             }
           }
         }
+    }
+    function copyCurlCommand() {
+        const curlDownload = document.getElementById('curlcommand');
+        navigator.clipboard.writeText(curlDownload.data);
+        curlDownload.textContent = 'Command Copied!';
     }
 </script>
 {% endblock content %}

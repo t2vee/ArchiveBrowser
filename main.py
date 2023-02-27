@@ -37,16 +37,26 @@ async def root(request: Request):
 
 @app.get("/ListDirectory", response_class=HTMLResponse)
 async def list_dir(request: Request, dir_path: str = r"/public"):
-    if '/GitStorage' in dir_path:
+    if "/GitStorage" in dir_path:
         return RedirectResponse("/Git")
     if os.path.exists(f'{os.environ.get("ROOT_PATH")}{dir_path}'):
         if os.path.isfile(f'{os.environ.get("ROOT_PATH")}{dir_path}'):
             return RedirectResponse(f"/FileInfo?file_path={dir_path}")
         dir_info = os.scandir(f'{os.environ.get("ROOT_PATH")}{dir_path}')
         logger.info(f'Requested List Directory of "{dir_path}"')
+        dir_list_filtered = [
+            entry.name
+            for entry in dir_info
+            if not "MM_DONT_INCLUDE-SHA256-" in entry.name
+        ]
+        dir_list = list(dir_list_filtered)
         return templates.TemplateResponse(
             "listdir.html",
-            {"request": request, "dir_info": dir_info, "dir_path": dir_path},
+            {
+                "request": request,
+                "dir_list": dir_list,
+                "dir_path": dir_path,
+            },
         )
     logger.warning(f'Requested File Directory ("{dir_path}") that does not exist')
     return templates.TemplateResponse(
@@ -60,9 +70,7 @@ async def file_info(request: Request, file_path: str = None):
         filename = os.path.basename(file_path)
         dir_path = os.path.dirname(file_path).replace("\\", "/")
         data = os.stat(f'{os.environ.get("ROOT_PATH")}{file_path}')
-        creation_date = datetime.fromtimestamp(data.st_ctime, tz=timezone.utc)
-        modified_date = datetime.fromtimestamp(data.st_mtime, tz=timezone.utc)
-        media_type = mime.from_file(f'{os.environ.get("ROOT_PATH")}{file_path}')
+        file_sha256 = await utils.grab_sha256(dir_path, filename)
         logger.info(f'Requested File information for "{file_path}"')
         return templates.TemplateResponse(
             "fileinfo.html",
@@ -71,10 +79,13 @@ async def file_info(request: Request, file_path: str = None):
                 "file_path": file_path,
                 "filename": filename,
                 "dir_path": dir_path,
-                "creation_date": creation_date,
-                "modified_date": modified_date,
+                "creation_date": datetime.fromtimestamp(data.st_ctime, tz=timezone.utc),
+                "modified_date": datetime.fromtimestamp(data.st_mtime, tz=timezone.utc),
                 "file_size": utils.convert_size(data.st_size),
-                "media_type": media_type,
+                "media_type": mime.from_file(
+                    f'{os.environ.get("ROOT_PATH")}{file_path}'
+                ),
+                "file_sha": file_sha256,
             },
         )
     logger.warning(f'Requested File information for Non-Existent file: "{file_path}"')
@@ -95,6 +106,7 @@ async def gui_download(request: Request, file_path: str = None, __token__: str =
         if os.path.isfile(f'{os.environ.get("ROOT_PATH")}{file_path}'):
             data = os.stat(f'{os.environ.get("ROOT_PATH")}{file_path}')
             filename = os.path.basename(file_path)
+            file_sha256 = utils.check_sha256(file_path, filename)
             return templates.TemplateResponse(
                 "guidownload.html",
                 {
@@ -103,6 +115,7 @@ async def gui_download(request: Request, file_path: str = None, __token__: str =
                     "file_size": utils.convert_size(data.st_size),
                     "__token__": __token__,
                     "file_path": file_path,
+                    "file_sha": file_sha256,
                 },
             )
         return templates.TemplateResponse(
@@ -151,7 +164,7 @@ app.include_router(user_api)
 
 if __name__ == "__main__":
     initialize.optimise_mem()
-    #initialize.start_sentry_sdk()
+    # initialize.start_sentry_sdk()
     utils.loaded()
     print("LOG:      (main.py) - Starting MirrorManager process")
     uvicorn.run(app, host="127.0.0.1", port=8000)

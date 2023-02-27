@@ -1,9 +1,11 @@
 import json
 import math
 import sqlite3
+import hashlib
 import time
 import uuid
 import git
+
 import os
 from urllib.parse import urlparse
 
@@ -74,9 +76,7 @@ class Logger:
 
 
 try:
-    cur.execute(
-        "CREATE TABLE pair(key TEXT UNIQUE, create_time TEXT)"
-    )
+    cur.execute("CREATE TABLE pair(key TEXT UNIQUE, create_time TEXT)")
 except sqlite3.OperationalError as e:
     pass
 
@@ -108,13 +108,32 @@ class SqlKeysManagement:
         return {"message": "The specified key and its data was successfully deleted."}
 
 
+async def grab_sha256(file_path, filename):
+    sha_file_structure = f"{os.environ.get('ROOT_PATH')}{file_path}/MM_DONT_INCLUDE-SHA256-{filename}.txt"
+    if os.path.isfile(sha_file_structure):
+        return await check_sha256(file_path, filename)
+    with open(sha_file_structure, "w") as f:
+        f.write(hashlib.sha256(file_path.encode("UTF-8")).hexdigest())
+        return "Hash generated, Reload page to view"
+
+
+async def check_sha256(file_path, filename):
+    sha_file_structure = f"{os.environ.get('ROOT_PATH')}{file_path}/MM_DONT_INCLUDE-SHA256-{filename}.txt"
+    with open(sha_file_structure, "r") as f:
+        file_hash = f.readline()
+        return file_hash
+
+
 async def load_git_config():
-    f = open('configs/git.json')
+    f = open("configs/git.json")
     config = json.load(f)
     for i in config:
         try:
             git_url = urlparse(i["info"]["url"])
-            git.Repo.clone_from(i["info"]["url"], f"{os.environ.get('ROOT_PATH')}/GitStorage/{git_url.path.lstrip('/')}")
+            git.Repo.clone_from(
+                i["info"]["url"],
+                f"{os.environ.get('ROOT_PATH')}/GitStorage/{git_url.path.lstrip('/')}",
+            )
         except:
             print(f'Initial Git clone failed. URI: {i["info"]["url"]}')
             pass
@@ -122,5 +141,5 @@ async def load_git_config():
     return "temp"
 
 
-async def loaded():
+def loaded():
     print("LOG:      (utils.py) - Program Utilities Loaded")

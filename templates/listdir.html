@@ -3,10 +3,10 @@
 {% block h1title %}Directory Listing of "{{ dir_path }}"{% endblock h1title %}
 {% block content %}
 <ul>
-    {% for entry in dir_info %}
-    <li><!--{{ (request.path + '?dir_path=' if request.path != '/' else '') + dir_path + entry.name }}-->
-        <a href="{{ request.path + '?dir_path=' + dir_path + '/' +  entry.name if dir_path != '/' else request.path + '?dir_path=' + dir_path + entry.name}}">
-            {{ entry.name }}
+    {% for dir_listing in dir_list %}
+    <li>
+        <a href="{{ request.path + '?dir_path=' + dir_path + '/' +  dir_listing if dir_path != '/' else request.path + '?dir_path=' + dir_path + dir_listing }}">
+            {{ dir_listing }}
         </a>
     </li>
     {% endfor %}
