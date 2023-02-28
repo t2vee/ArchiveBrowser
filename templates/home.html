@@ -1,9 +1,57 @@
-{% extends 'layout.html' %}
-{% block title %}Home | MirrorManager{% endblock title %}
-{% block h1title %}Home of t2v Archival Services{% endblock h1title %}
-{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Home | MirrorManager</title>
+    <link rel="stylesheet" href="/static/css/base.min.css">
+    <link rel="stylesheet" href="/static/css/social.min.css">
+    <style>{% block css %}{% endblock %}</style>
+</head>
+<body>
+    <div class="page">
+        <header>
+            <a href="/"><img class="logo" style="height: 50px;" src="https://cdn.t2v.city/content/KQgCslvqJtiMCkBKQmZp/t2v.ch/img/t2vmirrorservices_minified.png" alt="logo" /></a>
+            <h1>Part of the t2v Archive </h1>
+        </header>
+        <main style="text-align: center;">
+            <div id="privacy" style="padding: 15px; display: inline-flex;">
+                <a href="/Pub/ListDirectory" style="text-align: center">
+                    <div>
+                            <img src="/static/imgs/files.png" style="width: 50px"  alt="files"/>
+                            <p>Explore Files</p>
+                    </div>
+                </a>
+                <hr style="width: 1px; height: 60px; margin-left: 12px; margin-right: 17px">
+                <a href="/Pub/SearchFiles?__in__=Root" style="align-items: center">
+                    <div>
+                            <img src="/static/imgs/search.png" style="width: 50px"  alt="files"/>
+                            <p>Search Files</p>
+                    </div>
+                </a>
+                <hr style="width: 1px; height: 60px; margin-left: 12px; margin-right: 17px">
+                <a href="/KbRedirect/" style="align-items: center">
+                    <div>
+                            <img src="/static/imgs/external_link.png" style="width: 50px"  alt="files"/>
+                            <p>Knowledgebase</p>
+                    </div>
+                </a>
+            </div>
+        </main>
+        <br>
+        <footer>
+            <p>Powered by<span><a href="https://ttea.dev/t2v/mm">MirrorManager</a></span>- 2022 &copy; t2v</p>
+            <br><p>Page Loaded in <span id="pageloadtime">0</span> ms</p>
+        </footer>
+    </div>
+    <script>
+        function updateLocalElement() {
+            const pltEle = document.getElementById('pageloadtime');
+            let time = performance.timing;
+            let pageloadtime = time.loadEventStart - time.navigationStart;
+            pltEle.textContent = pageloadtime;
+        }
 
-<br>
-<br>
-
-{% endblock content %}
+        window.onload = updateLocalElement()
+    </script>
+</body>
+</html>

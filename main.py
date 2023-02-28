@@ -8,7 +8,7 @@ from magic import Magic
 from os.path import join, dirname
 from dotenv import load_dotenv
 from datetime import datetime, timezone
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, APIRouter
 from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -31,23 +31,26 @@ async def root():
 
 
 @app.get("/Home")
-async def root(request: Request):
+async def home(request: Request):
     return templates.TemplateResponse("home.html", {"request": request})
 
 
-@app.get("/ListDirectory", response_class=HTMLResponse)
-async def list_dir(request: Request, dir_path: str = r"/public"):
+pub_files = APIRouter(prefix="/Pub")
+
+
+@pub_files.get("/ListDirectory", response_class=HTMLResponse)
+async def list_dir(request: Request, dir_path: str = r"/"):
     if "/GitStorage" in dir_path:
         return RedirectResponse("/Git")
     if os.path.exists(f'{os.environ.get("ROOT_PATH")}{dir_path}'):
         if os.path.isfile(f'{os.environ.get("ROOT_PATH")}{dir_path}'):
-            return RedirectResponse(f"/FileInfo?file_path={dir_path}")
+            return RedirectResponse(f"/Pub/FileInfo?file_path={dir_path}")
         dir_info = os.scandir(f'{os.environ.get("ROOT_PATH")}{dir_path}')
         logger.info(f'Requested List Directory of "{dir_path}"')
         dir_list_filtered = [
             entry.name
             for entry in dir_info
-            if not "MM_DONT_INCLUDE-SHA256-" in entry.name
+            if not "MM_DONT_INCLUDE-" in entry.name
         ]
         dir_list = list(dir_list_filtered)
         return templates.TemplateResponse(
@@ -64,7 +67,7 @@ async def list_dir(request: Request, dir_path: str = r"/public"):
     )
 
 
-@app.get("/FileInfo", response_class=HTMLResponse)
+@pub_files.get("/FileInfo", response_class=HTMLResponse)
 async def file_info(request: Request, file_path: str = None):
     if os.path.isfile(f'{os.environ.get("ROOT_PATH")}{file_path}'):
         filename = os.path.basename(file_path)
@@ -100,7 +103,7 @@ async def file_info(request: Request, file_path: str = None):
     )
 
 
-@app.get("/GuiDownload", response_class=HTMLResponse)
+@pub_files.get("/GuiDownload", response_class=HTMLResponse)
 async def gui_download(request: Request, file_path: str = None, __token__: str = None):
     if await skm.get(__token__):
         if os.path.isfile(f'{os.environ.get("ROOT_PATH")}{file_path}'):
@@ -132,7 +135,12 @@ async def gui_download(request: Request, file_path: str = None, __token__: str =
     )
 
 
-@app.get("/DirectDownload")
+@pub_files.get("/SearchFiles")
+async def search_files(request: Request, __in__: str = f"{os.environ.get('ROOT_PATH')}"):
+    return templates.TemplateResponse("search.html", {"request": request, "search_action": __in__})
+
+
+@pub_files.get("/DirectDownload")
 async def direct_download(file_path: str = None, __token__: str = None):
     logger.info(f"Direct Download of File Requested. File Info Below")
     return download_file(file_path, __token__)
@@ -161,6 +169,7 @@ async def trigger_error():
 
 
 app.include_router(user_api)
+app.include_router(pub_files)
 
 if __name__ == "__main__":
     initialize.optimise_mem()

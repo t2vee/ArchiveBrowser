@@ -124,6 +124,14 @@ async def check_sha256(file_path, filename):
         return file_hash
 
 
+async def find_files(filename, search_path):
+    result = []
+    for root, dir, files in os.walk(search_path):
+        if str.lower(filename) in [x.lower() for x in files]:
+            result.append(os.path.join(root, filename))
+    return result
+
+
 async def load_git_config():
     f = open("configs/git.json")
     config = json.load(f)

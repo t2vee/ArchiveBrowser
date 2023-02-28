@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+{% block title %}List Directory | MirrorManager{% endblock title %}
+{% block h1title %}Search All Files in {{ search_action }}{% endblock h1title %}
+{% block css %}
+input {
+  border: none;
+  background-color: #222;
+  border-radius: 3px;
+  color: #eee;
+  font-size: 12px;
+  width: 85%;
+  line-height: 1.1em;
+  margin-bottom: 10px;
+  padding: 5px;
+}
+{% endblock css %}
+{% block content %}
+<div style="text-align: center">
+    <input name="Search" id="search" placeholder="Search" autocomplete="on" required="required">
+</div>
+<br>
+<br>
+<script>
+
+</script>
+{% endblock content %}

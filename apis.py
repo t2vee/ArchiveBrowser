@@ -1,8 +1,8 @@
 import os
 import utils
 from magic import Magic
-from fastapi import APIRouter
-from fastapi.responses import FileResponse
+from fastapi import APIRouter, status
+from fastapi.responses import FileResponse, Response
 
 mime = Magic(mime=True)
 logger = utils.Logger()
@@ -17,14 +17,14 @@ async def gen_dl_link(file_path: str = None):
         f"Generated Download link for File Path: {file_path} with access __token__: {key}"
     )
     sanitized_key = str(key).replace("'", "").replace("{", "").replace("}", "")
-    return f"/GuiDownload?file_path={file_path}&__token__={sanitized_key}"
+    return f"/Pub/GuiDownload?file_path={file_path}&__token__={sanitized_key}"
 
 
 @user_api.post("/DownloadFile", response_class=FileResponse)
 async def download_file(file_path: str = None, __token__: str = None):
     sqlres = await skm.get(__token__)
     if sqlres[0] != 5001:
-        if sqlres[0] is not None:  # < time.time(): TODO Fix time checking for tokens
+        if sqlres[0] is not None:  # TODO Fix time checking for tokens < time.time():
             if os.path.isfile(f'{os.environ.get("ROOT_PATH")}{file_path}'):
                 await skm.delete(__token__)
                 filename = f"t2vArchive-MirrorManager_{os.path.basename(file_path)}"
@@ -51,3 +51,23 @@ async def download_file(file_path: str = None, __token__: str = None):
     m = {"code": 401, "error": "Invalid Download Token!"}
     logger.warning(m)
     return m
+
+
+@user_api.post("/ArchiveSearch")
+async def download_file(
+    response: Response,
+    filename: str = None,
+    dir_path: str = f"{os.environ.get('ROOT_PATH')}",
+):
+    if filename:
+        try:
+            return await utils.find_files(filename, dir_path)
+        except:
+            response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+            return {
+                "error": 500,
+                "msg": "Server failed to search. This could be due to a problem with the api or a malformed client request",
+            }
+    else:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return {"error": 400, "msg": "Search Keyword cannot be empty!"}
