@@ -16,11 +16,15 @@ input {
 {% endblock css %}
 {% block content %}
 <div style="text-align: center">
-    <input name="Search" id="search" placeholder="Search" autocomplete="on" required="required">
+    <input name="Search" id="search" placeholder="Search" autocomplete="on" required="required" onkeydown="search(this)">
 </div>
 <br>
 <br>
 <script>
-
+function search(ele) {
+    if(event.key === 'Enter') {
+        alert(ele.value);
+    }
+}
 </script>
 {% endblock content %}
