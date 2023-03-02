@@ -1,7 +1,7 @@
 import os
 import utils
 from magic import Magic
-from fastapi import APIRouter, status
+from fastapi import APIRouter, status, Form
 from fastapi.responses import FileResponse, Response
 
 mime = Magic(mime=True)
@@ -56,18 +56,17 @@ async def download_file(file_path: str = None, __token__: str = None):
 @user_api.post("/ArchiveSearch")
 async def download_file(
     response: Response,
-    filename: str = None,
-    dir_path: str = f"{os.environ.get('ROOT_PATH')}",
+    search_request: str = Form(...),
+    dir_path: str = Form(None),
 ):
-    if filename:
-        try:
-            return await utils.find_files(filename, dir_path)
-        except:
-            response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-            return {
-                "error": 500,
-                "msg": "Server failed to search. This could be due to a problem with the api or a malformed client request",
-            }
+    if search_request:
+        if dir_path is None:
+            dir_path = os.environ.get("ROOT_PATH")
+            print(search_request)
+            print(dir_path)
+            return await utils.find_files(search_request, dir_path)
+        else:
+            return await utils.find_files(search_request, dir_path)
     else:
         response.status_code = status.HTTP_400_BAD_REQUEST
         return {"error": 400, "msg": "Search Keyword cannot be empty!"}

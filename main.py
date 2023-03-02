@@ -136,8 +136,8 @@ async def gui_download(request: Request, file_path: str = None, __token__: str =
 
 
 @pub_files.get("/SearchFiles")
-async def search_files(request: Request, __in__: str = f"{os.environ.get('ROOT_PATH')}"):
-    return templates.TemplateResponse("search.html", {"request": request, "search_action": __in__})
+async def search_files(request: Request, __in__: str = f"Root", dir_path: str = "Root"):
+    return templates.TemplateResponse("search.html", {"request": request, "search_action": dir_path})
 
 
 @pub_files.get("/DirectDownload")
