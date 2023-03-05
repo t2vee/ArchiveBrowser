@@ -48,9 +48,7 @@ async def list_dir(request: Request, dir_path: str = r"/"):
         dir_info = os.scandir(f'{os.environ.get("ROOT_PATH")}{dir_path}')
         logger.info(f'Requested List Directory of "{dir_path}"')
         dir_list_filtered = [
-            entry.name
-            for entry in dir_info
-            if not "MM_DONT_INCLUDE-" in entry.name
+            entry.name for entry in dir_info if not "MM_DONT_INCLUDE-" in entry.name
         ]
         dir_list = list(dir_list_filtered)
         return templates.TemplateResponse(
@@ -137,7 +135,9 @@ async def gui_download(request: Request, file_path: str = None, __token__: str =
 
 @pub_files.get("/SearchFiles")
 async def search_files(request: Request, __in__: str = f"Root", dir_path: str = "Root"):
-    return templates.TemplateResponse("search.html", {"request": request, "search_action": dir_path})
+    return templates.TemplateResponse(
+        "search.html", {"request": request, "search_action": dir_path}
+    )
 
 
 @pub_files.get("/DirectDownload")

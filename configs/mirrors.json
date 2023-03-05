@@ -1,0 +1,24 @@
+{
+  "MidnightBSD": {
+    "id": 0,
+    "info": {
+      "url": "https://discovery.midnightbsd.org/releases/",
+      "dir_suffix": "/ISO-Releases/"
+    },
+    "config": {
+      "monitor": true,
+      "interval": "12h"
+    }
+  },
+  "Debian-Latest": {
+    "id": 1,
+    "info": {
+      "url": "https://cdimage.debian.org/debian-cd/current/",
+      "dir_suffix": "/ISO-Releases/"
+    },
+    "config": {
+      "monitor": false,
+      "interval": null
+    }
+  }
+}
