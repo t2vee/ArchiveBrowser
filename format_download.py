@@ -17,18 +17,26 @@ async def load_file_mirror_config():
             unix_dir_path = os.environ.get("ROOT_PATH").replace("\\", "/")
             dest_path = f'{unix_dir_path}{info["info"]["dir_suffix"]}'
             try:
-                os.system('cls' if os.name == 'nt' else 'clear')
-                print('========================= ! IMPORTANT ! =========================')
-                print('Downloading all files from ' + info["info"]["url"])
-                print('Depending on the size of the Filesystem, this may take a while...')
-                print('To cancel the operation, repeatedly press Cntrl + C')
-                print('This message will disappear in 10 seconds and you will receive the download output')
-                print('========================= ! IMPORTANT ! =========================')
+                os.system("cls" if os.name == "nt" else "clear")
+                print(
+                    "========================= ! IMPORTANT ! ========================="
+                )
+                print("Downloading all files from " + info["info"]["url"])
+                print(
+                    "Depending on the size of the Filesystem, this may take a while..."
+                )
+                print("To cancel the operation, repeatedly press Cntrl + C")
+                print(
+                    "This message will disappear in 10 seconds and you will receive the download output"
+                )
+                print(
+                    "========================= ! IMPORTANT ! ========================="
+                )
                 sleep(10)
-                os.system('cls' if os.name == 'nt' else 'clear')
+                os.system("cls" if os.name == "nt" else "clear")
                 os.system(f'wget -r -np -nH {info["info"]["url"]} -P {dest_path}')
             except:
-                print('Download failed for ' + info['info']['url'])
+                print("Download failed for " + info["info"]["url"])
     f.close()
     return "File Sync Complete"
 
