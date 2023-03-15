@@ -22,7 +22,7 @@ to install mirrormanager you'll need
 
 2. setup mirrormanager  
    - ``cd /usr/local/etc/mirrormanger``  
-   - ``git clone https://ttea.dev/t2v/mm . --depth-1``  
+   - ``git clone https://ttea.dev/t2v/mirrormanager . --depth-1``  
    - ``pip install -r requirements.txt --upgrade``   
   
 3. configure mirrors
