@@ -9,25 +9,26 @@ from utils import Logger
 
 log = Logger()
 
-#log.basicConfig(
+
+# log.basicConfig(
 #    level=log.INFO,
 #    format="%(asctime)s [%(levelname)s] %(message)s",
 #    handlers=[log.FileHandler("debug.log"), log.StreamHandler()],
-#)
+# )
 
 
 # Check disk space
 async def disk_space_check():
     log.testing('Starting Disk Size Check...')
     total, used, free = shutil.disk_usage("/")
-    disk_space = [total // (2**30), used // (2**30), free // (2**30)]
+    disk_space = [total // (2 ** 30), used // (2 ** 30), free // (2 ** 30)]
     if disk_space[2] < 20:
         log.critical(
             "This system has less than 20gb of storage. MirrorManager requires more space for smooth operation."
         )
         time.sleep(1)
         pass
-        #raise RequiredTestFailed('Invalid Disk Size')
+        # raise RequiredTestFailed('Invalid Disk Size')
     elif disk_space[2] < 100:
         log.warning(
             "Although you have enough space for MirrorManager to run, It recommended that you allocate more"
@@ -100,16 +101,22 @@ async def compatible_os():
 async def check_jigdo():
     log.testing('Starting Jigdo Installation Check...')
     pass_or_fail = []
-    jigdo_command_list = ["jigdo", "jigdo-lite", "jigdo-full"]
+    jigdo_command_list = ["jigdo", "jigdo-lite", "jigdo-full", "ls", "ls -la"]
     try:
-        with open("configs/jigdo_command.txt", "w") as f:
+        log.info('Checking for any previously selected commands...')
+        with open("configs/jigdo_command.txt", "r") as f:
+            log.dev(f.readline())
             if f.readline() in jigdo_command_list:
+                log.dev(jigdo_command_list)
                 log.info("Previous command selection found! passing test...")
-                pass
+            else:
+                raise
     except:
+        log.info('Checking System for Installations')
         for command in jigdo_command_list:
             stream = os.popen(command)
             output = stream.read()
+            time.sleep(2)
             if "Permission denied" in output:
                 log.critical(
                     "A jigdo install was found but the script is unable to access it."
@@ -120,23 +127,32 @@ async def check_jigdo():
                 )
                 time.sleep(1)
                 raise RequiredTestFailed('Permission Denied to Command')
-            elif "command not found" in output:
-                log.warning(command + "Not Found on the system... Passing")
+            elif "command not found" in output or output == '':
+                log.warning(command + " Not Found on the system... Passing")
                 pass_or_fail.append(False)
             else:
                 log.info("Command Found! Testing others for compatibility...")
                 pass_or_fail.append(command)
                 pass
-        if pass_or_fail.count(False) < len(jigdo_command_list):
+        if pass_or_fail.count(False) < len(jigdo_command_list) - 1:
             log.warning(
                 "Multiple Jigdo installs were found. Please select which one for MirrorManager to use."
             )
             filtered_list = [x for x in pass_or_fail if x is not False]
-            i = 0
-            for command in filtered_list:
-                print(f"{i}: {command}")
-                i = +1
-            chosen_command = input('Select via the number. E.g "2"')
+            valid = False
+            while valid is False:
+                i = 0
+                for command in filtered_list:
+                    print(f"{i}: {command}")
+                    i = i + 1
+                time.sleep(1)
+                print('Select via the number. E.g "2"')
+                chosen_command = input(':')
+                if not chosen_command.isdigit() or int(chosen_command) > int(len(jigdo_command_list) - 1):
+                    print('That is a invalid input!')
+                    valid = False
+                else:
+                    valid = True
             try:
                 with open("configs/jigdo_command.txt", "w") as f:
                     f.write(filtered_list[int(chosen_command)])
@@ -175,16 +191,15 @@ async def validate_json():
 # TODO If one or more fixable tests fail give option to fix then repair
 
 
-
 #  Have a custom exception for tests
 class RequiredTestFailed(Exception):
     log.fail("A Required Test Failed. This must be fixed before continuing.")
-    #sys.exit()
+    # sys.exit()
 
 
 if __name__ == "__main__":
-    asyncio.run(disk_space_check())
-    asyncio.run(is_connected())
-    asyncio.run(compatible_os())
+    #asyncio.run(disk_space_check())
+    #asyncio.run(is_connected())
+    #asyncio.run(compatible_os())
     asyncio.run(check_jigdo())
-    asyncio.run(validate_json())
+    #asyncio.run(validate_json())
