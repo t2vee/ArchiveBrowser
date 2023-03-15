@@ -97,7 +97,8 @@ async def compatible_os():
     pass
 
 
-# TODO Check if jigdo is installed
+# Check if jigdo is installed
+# TODO Allow for adding custom commands
 async def check_jigdo():
     log.testing('Starting Jigdo Installation Check...')
     pass_or_fail = []
@@ -190,7 +191,6 @@ async def validate_json():
 
 # TODO If one or more fixable tests fail give option to fix then repair
 
-
 #  Have a custom exception for tests
 class RequiredTestFailed(Exception):
     log.fail("A Required Test Failed. This must be fixed before continuing.")
@@ -198,8 +198,8 @@ class RequiredTestFailed(Exception):
 
 
 if __name__ == "__main__":
-    #asyncio.run(disk_space_check())
-    #asyncio.run(is_connected())
-    #asyncio.run(compatible_os())
+    asyncio.run(disk_space_check())
+    asyncio.run(is_connected())
+    asyncio.run(compatible_os())
     asyncio.run(check_jigdo())
-    #asyncio.run(validate_json())
+    asyncio.run(validate_json())
