@@ -1,3 +1,0 @@
-TODO fix page loaded time to a more readable time format
-TODO fix __token__ creation date checking
-TODO fix broken css when there are many contents on screen

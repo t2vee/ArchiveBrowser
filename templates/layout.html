@@ -5,6 +5,7 @@
     <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="/static/css/base.min.css">
     <link rel="stylesheet" href="/static/css/social.min.css">
+    <!-- TODO fix broken css when there are many contents on screen -->
     <style>{% block css %}{% endblock %}</style>
 </head>
 <body>
@@ -25,7 +26,7 @@
             <br><p>Page Loaded in <span id="pageloadtime">0</span> ms</p>
         </footer>
     </div>
-    <script>
+    <script><!-- TODO fix page loaded time to a more readable time format -->
         function updateLocalElement() {
             const pltEle = document.getElementById('pageloadtime');
             let time = performance.timing;

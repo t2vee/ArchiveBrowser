@@ -41,7 +41,6 @@ class Logger:
     def __init__(self):
         pass
 
-
     @staticmethod
     def testing(message):
         print(
@@ -162,7 +161,7 @@ async def check_sha256(file_path, filename):
         return file_hash
 
 
-async def find_files(filename, search_path):
+def find_files(filename, search_path):
     result = []
     for root, dir, files in os.walk(search_path):
         if str.lower(filename) in [x.lower() for x in files]:

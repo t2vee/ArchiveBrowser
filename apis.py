@@ -1,5 +1,5 @@
 import os
-import utils
+import utils.utils as utils
 from magic import Magic
 from fastapi import APIRouter, status, Form
 from fastapi.responses import FileResponse, Response
@@ -64,9 +64,9 @@ async def download_file(
             dir_path = os.environ.get("ROOT_PATH")
             print(search_request)
             print(dir_path)
-            return await utils.find_files(search_request, dir_path)
+            return utils.find_files(search_request, dir_path)
         else:
-            return await utils.find_files(search_request, dir_path)
+            return utils.find_files(search_request, dir_path)
     else:
         response.status_code = status.HTTP_400_BAD_REQUEST
         return {"error": 400, "msg": "Search Keyword cannot be empty!"}

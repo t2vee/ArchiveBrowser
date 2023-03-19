@@ -1,7 +1,7 @@
 import os
 import time
 import uvicorn
-import utils
+import utils.utils as utils
 import initialize
 from apis import user_api, download_file
 from magic import Magic

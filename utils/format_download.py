@@ -1,7 +1,5 @@
 import os
-import urllib.request
 import asyncio
-from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from time import sleep
 import json
@@ -11,7 +9,7 @@ load_dotenv(dotenv_path)
 
 
 async def load_file_mirror_config():
-    with open("configs/mirrors.json", "r") as f:
+    with open("../configs/mirrors.json", "r") as f:
         config = json.load(f)
         for mirror, info in config.items():
             unix_dir_path = os.environ.get("ROOT_PATH").replace("\\", "/")
