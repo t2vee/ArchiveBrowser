@@ -16,11 +16,12 @@ to install mirrormanager you'll need
 
 1. install python and pip  
    - ``cd /tmp``  
-   - ``pkg install python311 curl``  
+   - ``pkg install python311 curl git``  
    - ``curl -O -L https://bootstrap.pypa.io/get-pip.py``  
    - ``python3.11 get-pip.py``  
 
 2. setup mirrormanager  
+   - ``mkdir /usr/local/etc/mirrormanger``
    - ``cd /usr/local/etc/mirrormanger``  
    - ``git clone https://ttea.dev/t2v/mirrormanager . --depth-1``  
    - ``pip install -r requirements.txt --upgrade``   
