@@ -1,0 +1,21 @@
+.loginbutton {
+    font-size: 15px;
+    padding: 3px;
+    margin-left: 10px;
+    background-color:
+    white; color: #181A1B;
+    border-radius: 5px;
+    text-decoration: none;
+    border-bottom: 2px solid grey;
+    cursor: pointer;
+}
+.loginbutton:hover {
+    color: white;
+    background-color: grey;
+    border-top: 1px solid grey;
+    border-bottom: 0px;
+    -webkit-box-shadow: inset 0px 4px 0px 0px #0A0E12;
+    -moz-box-shadow: inset 0px 4px 0px 0px #0A0E12;
+    box-shadow: inset 0px 0px 4px 0px #0A0E12;
+    cursor: pointer;
+}

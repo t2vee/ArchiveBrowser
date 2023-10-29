@@ -161,12 +161,18 @@ async def check_sha256(file_path, filename):
         return file_hash
 
 
+from functools import lru_cache
+
+@lru_cache(maxsize=os.environ.get("QUERY_CACHE_AMOUNT"))  # Cache up to 128 unique search queries
 def find_files(filename, search_path):
     result = []
+    filename_lower = filename.lower()  # Convert to lower case once
     for root, dir, files in os.walk(search_path):
-        if str.lower(filename) in [x.lower() for x in files]:
-            result.append(os.path.join(root, filename))
+        for file in files:
+            if filename_lower == file.lower():
+                result.append(os.path.join(root, file))
     return result
+
 
 
 def loaded():

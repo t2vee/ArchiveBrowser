@@ -1,18 +1,18 @@
 import gc
 import os
-import sentry_sdk
+#import sentry_sdk
 
 
-def start_sentry_sdk():
-    if os.environ.get("PRODUCTION"):
-        traces_sample_rate = 0.5
-    else:
-        traces_sample_rate = 1.0
-    sentry_sdk.init(
-        dsn=f"{os.environ.get('SENTRY_DSN')}",
-        traces_sample_rate=traces_sample_rate,
-    )
-    print("LOG:      (initialize.py) - Sentry SDK Started")
+#def start_sentry_sdk():
+#    if os.environ.get("PRODUCTION"):
+#        traces_sample_rate = 0.5
+#    else:
+#        traces_sample_rate = 1.0
+#    sentry_sdk.init(
+#        dsn=f"{os.environ.get('SENTRY_DSN')}",
+#        traces_sample_rate=traces_sample_rate,
+#    )
+#    print("LOG:      (initialize.py) - Sentry SDK Started")
 
 
 def optimise_mem():

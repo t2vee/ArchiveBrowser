@@ -2,27 +2,23 @@
 {% block title %}List Directory | MirrorManager{% endblock title %}
 {% block h1title %}Search All Files in {{ search_action }}{% endblock h1title %}
 {% block css %}
-input {
-  border: none;
-  background-color: #222;
-  border-radius: 3px;
-  color: #eee;
-  font-size: 12px;
-  width: 85%;
-  line-height: 1.1em;
-  margin-bottom: 10px;
-  padding: 5px;
-}
+    <link rel="stylesheet" href="/Static/Styles/Search.css">
 {% endblock css %}
 {% block content %}
 <div style="text-align: center">
     <div style="text-align: left; margin-left: 30px;">
-      <form method="post" action="/API/v1/GUI/ArchiveSearch">
-        <label for="search_request">Search Input</label><input name="search_request" id="search_request" placeholder="search_request" autocomplete="on" required="required">
-        <br><button type="submit" class="loginbutton">Submit</button>
-      </form>
+        <form id="myForm">
+            <label for="search_request">Search Input</label>
+            <input name="search_request" id="search_request" placeholder="search_request" autocomplete="on" required="required">
+            <br><button type="submit" class="loginbutton">Submit</button>
+        </form>
     </div>
 </div>
+
+<div id="results"></div>
+
+<script src="/Static/Scripts/Search/Search.js"></script>
+
 <br>
 <br>
 {% endblock content %}
