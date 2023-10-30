@@ -6,7 +6,6 @@ import uuid
 import os
 from datetime import datetime
 
-
 con = sqlite3.connect(r"db.sqlite", check_same_thread=False)
 cur = con.cursor()
 
@@ -163,7 +162,8 @@ async def check_sha256(file_path, filename):
 
 from functools import lru_cache
 
-@lru_cache(maxsize=os.environ.get("QUERY_CACHE_AMOUNT"))  # Cache up to 128 unique search queries
+
+@lru_cache(maxsize=os.environ.get("QUERY_CACHE_AMOUNT"))
 def find_files(filename, search_path):
     result = []
     filename_lower = filename.lower()  # Convert to lower case once
@@ -172,7 +172,6 @@ def find_files(filename, search_path):
             if filename_lower == file.lower():
                 result.append(os.path.join(root, file))
     return result
-
 
 
 def loaded():

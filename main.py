@@ -73,11 +73,15 @@ async def list_dir(request: Request, dir_path: str = r"/"):
         if os.path.isfile(f'{os.environ.get("ROOT_PATH")}{dir_path}'):
             return RedirectResponse(f"/Pub/FileInfo?file_path={dir_path}")
         dir_info = os.scandir(f'{os.environ.get("ROOT_PATH")}{dir_path}')
-        logger.info(f'Requested List Directory of "{dir_path}"')
-        dir_list_filtered = [
-            entry.name for entry in dir_info if not "MM_DONT_INCLUDE-" in entry.name
-        ]
-        dir_list = list(dir_list_filtered)
+        dir_list = []
+        for entry in dir_info:
+            if "MM_DONT_INCLUDE-" not in entry.name:
+                data = entry.stat()
+                dir_list.append({
+                    "name": entry.name,
+                    "size": utils.convert_size(data.st_size),
+                    "modified_date": datetime.fromtimestamp(data.st_mtime, tz=timezone.utc).strftime('%Y-%b-%d %H:%M')
+                })
         return templates.TemplateResponse(
             "listdir.html",
             {

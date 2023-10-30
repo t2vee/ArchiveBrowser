@@ -2,16 +2,34 @@
 {% block title %}List Directory | MirrorManager{% endblock title %}
 {% block h1title %}Directory Listing of "{{ dir_path }}"{% endblock h1title %}
 {% block content %}
-<ul>
-    {% for dir_listing in dir_list %}
-    <li>
-        <a href="{{ request.path + '?dir_path=' + dir_path + '/' +  dir_listing if dir_path != '/' else request.path + '?dir_path=' + dir_path + dir_listing }}">
-            {{ dir_listing }}
-        </a>
-    </li>
-    {% endfor %}
-</ul>
-<br>
-<br>
-
+<style>td, th {
+  padding: 0 20px;
+}
+.heading-row {
+    background-color: white;
+    color: black;
+}
+</style>
+<table>
+    <thead>
+        <tr class="heading-row">
+            <th><strong>File/Dir</strong></th>
+            <th><strong>File Size</strong></th>
+            <th><strong>Date Modified</strong></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for dir_entry in dir_list %}
+        <tr>
+            <td>
+                <a href="{{ request.path + '?dir_path=' + dir_path + '/' +  dir_entry.name if dir_path != '/' else request.path + '?dir_path=' + dir_path + dir_entry.name }}">
+                    {{ dir_entry.name }}
+                </a>
+            </td>
+            <td>{{ dir_entry.size }}</td>
+            <td>{{ dir_entry.modified_date }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock content %}
