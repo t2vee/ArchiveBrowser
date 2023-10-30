@@ -4,6 +4,7 @@ import uvicorn
 import utils.utils as utils
 import initialize
 import random
+from cachetools import cached, LRUCache
 from apis import user_api, download_file
 from magic import Magic
 from os.path import join, dirname
@@ -23,6 +24,13 @@ dotenv_path = join(dirname(__file__), ".env")
 load_dotenv(dotenv_path)
 app.mount("/Static", StaticFiles(directory="Static"), name="Static")
 templates = Jinja2Templates(directory="templates")
+
+
+def cache_key(func, request, dir_path):
+    return dir_path
+
+
+cache = LRUCache(maxsize=1000)
 
 
 def time_it(func):
@@ -56,6 +64,7 @@ async def home(request: Request):
 pub_files = APIRouter(prefix="/Pub")
 
 
+@cached(cache, key=cache_key)
 @pub_files.get("/ListDirectory", response_class=HTMLResponse)
 async def list_dir(request: Request, dir_path: str = r"/"):
     if "/GitStorage" in dir_path:
