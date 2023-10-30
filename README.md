@@ -1,3 +1,5 @@
+> Outdated readme lmao
+
 # MirrorManager
 
 the goal of mirrormanager is to allow for easy setup of hosting file mirrors, with the added benefit of a simple file-browser, downloader and file searcher
