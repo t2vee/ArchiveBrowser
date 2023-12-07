@@ -10,8 +10,10 @@
 <body>
     <div class="page">
         <header style="margin:0;padding:0;">
-            <a href="/"><img class="logo" style="height: 50px;" src="https://cdn.t2v.city/content/KQgCslvqJtiMCkBKQmZp/t2v.ch/img/t2vmirrorservices_minified.png" alt="logo" /></a>
-            <h2 style="vertical-align: middle;"><img style="vertical-align: middle;width:40px;" src="/Static/Images/55px-TodoList.png">{% block h1title %}{% endblock %}<img style="vertical-align: middle;width:40px;" src="/Static/Images/55px-Administrator.png"></h2>
+            <a href="/"><img class="logo" style="height: 50px;" src="https://cfedge-cdn.vee.city/content/KQgCslvqJtiMCkBKQmZp/t2v.ch/img/t2vmirrorservices_minified.png" alt="logo" /></a>
+            <div></div>
+            <h3 style="vertical-align: middle;display: inline-flex"><img style="vertical-align: middle;width:40px;top: -6px;position: relative;" src="/Static/Images/55px-TodoList.png">{% block h1title %}{% endblock %}</h3>
+            {% block extra_header_content %}{% endblock %}
         </header>
         <main style="text-align: justify;">
             <div id="privacy" style="padding: 15px;">
@@ -21,7 +23,7 @@
         <br>
         <footer>
             <p><span><a style="cursor: pointer;" onclick="history.back()"><</a></span> | <span><a href="/">home</a></span> | <span><a style="cursor: pointer;" onclick="history.forward()">></a></span></p>
-            <p>Special thanks to <a href="https://solero.me">Solero</a> for archive content</p>
+            <p>Running <a href="https://github.com/t2vee/ArchiveBrowser">ArchiveBrowser</a> - version 0.2.9</p>
             <!--<p>Page Loaded in <span id="pageloadtime">0</span> ms</p>-->
             <p id="performance-metrics">Template: <strong>{{ template_time }}ms</strong> - </p>
         </footer>

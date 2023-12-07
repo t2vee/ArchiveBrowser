@@ -5,6 +5,8 @@ import time
 import uuid
 import os
 from datetime import datetime
+from functools import wraps
+from cachetools import cached, LRUCache
 
 con = sqlite3.connect(r"db.sqlite", check_same_thread=False)
 cur = con.cursor()
@@ -150,7 +152,7 @@ async def grab_sha256(file_path, filename):
         return await check_sha256(file_path, filename)
     with open(sha_file_structure, "w") as f:
         f.write(hashlib.sha256(file_path.encode("UTF-8")).hexdigest())
-        return "Hash generated, Reload page to view"
+        return "Hash loaded, Reload page to view"
 
 
 async def check_sha256(file_path, filename):
@@ -163,15 +165,45 @@ async def check_sha256(file_path, filename):
 from functools import lru_cache
 
 
-@lru_cache(maxsize=os.environ.get("QUERY_CACHE_AMOUNT"))
+@lru_cache(maxsize=int(os.environ.get("QUERY_CACHE_AMOUNT", 100)))
 def find_files(filename, search_path):
     result = []
     filename_lower = filename.lower()  # Convert to lower case once
-    for root, dir, files in os.walk(search_path):
+    for root, dirs, files in os.walk(search_path):
         for file in files:
-            if filename_lower == file.lower():
-                result.append(os.path.join(root, file))
+            if filename_lower in file.lower():
+                if "MM_DONT_INCLUDE-" not in filename_lower:
+                    result.append(os.path.join(root, file))
+                pass
     return result
+
+
+import random
+from fastapi import Request
+
+
+def cache_key(func, request, dir_path):
+    return dir_path
+
+
+cache = LRUCache(maxsize=1000)
+
+
+def time_it(func):
+    @wraps(func)
+    async def wrapper(request: Request, *args, **kwargs):
+        start_time = time.time()
+        response = await func(request, *args, **kwargs)
+        end_time = time.time()
+        load_time = end_time - start_time
+        setattr(request.state, 'page_load_time', load_time)
+        return response
+
+    return wrapper
+
+
+def temp_template_time():
+    return random.randint(5, 100)
 
 
 def loaded():

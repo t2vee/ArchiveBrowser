@@ -1,0 +1,29 @@
+{% extends 'layout.html' %}
+{% block title %}Home{% endblock title %}
+{% block main_content_header %}
+<form action="">
+    <label><input type="radio" name="time_selection" value="last_day"><span>Last Day</span></label>
+    <label><input type="radio" name="time_selection" value="last_week"><span>Last Week</span></label>
+    <label><input type="radio" name="time_selection" value="last_month"><span>Last Month</span></label>
+    <label><input type="radio" name="time_selection" value="last_year"><span>Last Year</span></label>
+    <label><input type="radio" name="time_selection" value="all_time"><span>All Time</span></label>
+</form>
+
+{% endblock main_content_header %}
+{% block main_content %}
+<h2 style="margin: 0">Browse Archived Mods</h2>
+<hr>
+<h3>>>> Submission Information</h3>
+<p>Here you can request to add new content to the MCModArchive.</p>
+<p>We do not allow content to be user-uploaded to avoid malware, viruses and other malicious media being uploaded to the archive.</p>
+<p>Instead, we ask that you submit a link to the mod, plugin, map you wish to be added to the archive. We currently support submissions from CurseForge, Modrinth or Hangar projects.</p>
+<p>Once you have submitted a link, the archive will search and obtain all versions, dependencies and files for that mod + its dependencies.</p>
+<p>Keep in mind that if content is still available to download via CurseForge, Modrinth or Hanger, you will be unable to download directly from the archive and will instead be redirected to one of the aforementioned sources. This is to make sure that the original mod creators are receiving support. Only once a specific file/version/project is unable to be downloaded via a provider, will the content be available to download.</p>
+<br>
+<h3>>>> Submit Content Link</h3>
+<form action="/" method="post">
+    <label for="link">You can submit multiple links at a time. Make sure to separate each link by a new line.</label>
+    <textarea rows="5" cols="60" name="link" required="required" id="link" placeholder="https://www.curseforge.com/minecraft/mc-mods/example-mod"></textarea>
+    <br>
+    <input type="submit" value="Submit">
+{% endblock %}

@@ -1,6 +1,15 @@
 {% extends 'layout.html' %}
 {% block title %}List Directory | MirrorManager{% endblock title %}
-{% block h1title %}Directory Listing of "{{ dir_path }}"{% endblock h1title %}
+{% block h1title %}    <nav>/
+        {% for segment in path_segments %}
+            <a style="padding: 0;margin:0;" href="{{ segment.url }}">{{ segment.name }}</a> /
+        {% endfor %}
+    </nav>{% endblock h1title %}
+{% block extra_header_content %}
+    <div>
+            <a href="/FileBrowser/SearchFiles?__in__={{ dir_path }}" style="display: inline-flex;"><span><img src="/Static/Images/search.png" style="width: 15px;height: 15px;" alt="files"/></span>&nbsp;Search Files In This Directory</a>
+    </div>
+{% endblock extra_header_content %}
 {% block content %}
 <style>td, th {
   padding: 0 20px;
@@ -23,7 +32,7 @@
         <tr>
             <td>
                 <a href="{{ request.path + '?dir_path=' + dir_path + '/' +  dir_entry.name if dir_path != '/' else request.path + '?dir_path=' + dir_path + dir_entry.name }}">
-                    {{ dir_entry.name }}
+                    {{ dir_entry.name[:19 - 3] + "..." if dir_entry.name|length > 19 else dir_entry.name}}
                 </a>
             </td>
             <td>{{ dir_entry.size }}</td>

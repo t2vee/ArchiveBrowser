@@ -1,0 +1,81 @@
+{% extends 'layout.html' %}
+{% block title %}Home{% endblock title %}
+{% block main_content_header %}
+<strong>Mods can only be downloaded via the archive if the original project is no longer active</strong>
+{% endblock main_content_header %}
+{% block main_content %}
+<h2 style="margin: 0">Submit New Content to the Archive</h2>
+<hr>
+<h3>>>> Submission Information</h3>
+<p>Here you can request to add new content to the MCModArchive.</p>
+<p>We do not allow content to be user-uploaded to avoid malware, viruses and other malicious media being uploaded to the archive.</p>
+<p>Instead, we ask that you submit a link to the mod, plugin, map you wish to be added to the archive. We currently support submissions from CurseForge, Modrinth or Hangar projects.</p>
+<p>Once you have submitted a link, the archive will search and obtain all versions, dependencies and files for that mod + its dependencies.</p>
+<p>Keep in mind that if content is still available to download via CurseForge, Modrinth or Hanger, you will be unable to download directly from the archive and will instead be redirected to one of the aforementioned sources. This is to make sure that the original mod creators are receiving support. Only once a specific file/version/project is unable to be downloaded via a provider, will the content be available to download.</p>
+<br>
+<h3>>>> Submit Content Link</h3>
+<form id="modForm" action="/API/v1/MCModsArchive/GUI/SubmitContentLink" method="post">
+    <label for="link">You can submit multiple links at a time. Make sure to separate each link by a new line.</label>
+    <textarea rows="5" cols="60" name="mod_links" required="required" id="link" placeholder="https://www.curseforge.com/minecraft/mc-mods/example-mod"></textarea>
+    <br>
+    <input type="submit" value="Submit">
+</form>
+<div id="loader" style="display: none;">
+    <p>Loading...</p>
+    <div class="loader"></div>
+</div>
+<div id="errorList"></div>
+<script>
+    document.getElementById('modForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        // Display loader
+        document.getElementById('modForm').style.display = 'none';
+        document.getElementById('loader').style.display = 'block';
+        document.getElementById('errorList').innerHTML = ''; // Clear previous errors
+
+        const formData = new FormData(this);
+        fetch(this.action, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('loader').style.display = 'none';
+
+            const errorList = document.getElementById('errorList');
+            let allSuccessful = true;
+            const successfulSlugs = [];
+
+            data.forEach(item => {
+                if (item.status === 'success') {
+                    successfulSlugs.push(item.slug);
+                } else {
+                    allSuccessful = false;
+                    const errorItem = document.createElement('p');
+                    errorItem.textContent = `Error for ${item.link}: ${item.message}`;
+                    errorList.appendChild(errorItem);
+                }
+            });
+
+            if (allSuccessful) {
+                const slugsQuery = successfulSlugs.join(',');
+                window.location.href = `/MCModsArchive/UploadSuccess?slugs=${slugsQuery}`;
+            } else {
+                document.getElementById('modForm').style.display = 'block';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('modForm').style.display = 'block';
+            const errorList = document.getElementById('errorList');
+            const errorMessage = document.createElement('p');
+            errorMessage.textContent = 'An error occurred while processing your request.';
+            errorList.appendChild(errorMessage);
+        });
+    });
+</script>
+
+
+{% endblock %}

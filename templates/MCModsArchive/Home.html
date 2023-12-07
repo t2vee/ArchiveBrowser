@@ -1,0 +1,35 @@
+{% extends 'layout.html' %}
+{% block title %}Home{% endblock title %}
+{% block main_content_header %}
+<form action="">
+    <label><input type="radio" name="time_selection" value="last_day"><span>Last Day</span></label>
+    <label><input type="radio" name="time_selection" value="last_week"><span>Last Week</span></label>
+    <label><input type="radio" name="time_selection" value="last_month"><span>Last Month</span></label>
+    <label><input type="radio" name="time_selection" value="last_year"><span>Last Year</span></label>
+    <label><input type="radio" name="time_selection" value="all_time"><span>All Time</span></label>
+</form>
+{% endblock main_content_header %}
+{% block main_content %}
+<h2 style="margin: 0">Featured Content</h2>
+<hr>
+<div class="gallery-container">
+    <div class="mod-container gallery-container-mod">Content 1</div>
+    <div class="mod-container gallery-container-mod">Content 2</div>
+    <div class="mod-container gallery-container-mod">Content 1</div>
+    <div class="mod-container gallery-container-mod">Content 2</div>
+    <div class="mod-container gallery-container-mod">Content 1</div>
+    <div class="mod-container gallery-container-mod">Content 2</div>
+</div>
+<br>
+<br>
+<h2 style="margin: 0">Recently Added</h2>
+<hr>
+<div class="gallery-container">
+    <div class="mod-container gallery-container-mod">Content 1</div>
+    <div class="mod-container gallery-container-mod">Content 2</div>
+    <div class="mod-container gallery-container-mod">Content 1</div>
+    <div class="mod-container gallery-container-mod">Content 2</div>
+    <div class="mod-container gallery-container-mod">Content 1</div>
+    <div class="mod-container gallery-container-mod">Content 2</div>
+</div>
+{% endblock %}

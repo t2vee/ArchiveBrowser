@@ -1,0 +1,72 @@
+{% extends 'layout.html' %}
+{% block title %}Home{% endblock title %}
+{% block main_content_header %}
+<strong>Mods can only be downloaded via the archive if the original project is no longer active</strong>
+{% endblock main_content_header %}
+{% block main_content %}
+<h2 style="margin: 0">Mod Metadata for {{ mod.title }}</h2>
+<hr>
+<div class="overrides">
+    <div style="display: inline-flex;">
+        <img src="{{ mod.icon_url }}" width="128px;" height="128px;" alt="{{ mod.title }}" />
+        <div style="margin-left: 10px;">
+            <h3>{{ mod.title }}</h3>
+            <p><strong>Author:</strong> {{ mod.author }}</p>
+            <p><strong>Last Updated:</strong> {{ mod.updated.strftime('%Y-%m-%d') }}</p>
+            <p><strong>Status:</strong> {{ mod.status }}</p>
+        </div>
+        <div style="margin-left: 10px;">
+            <p><strong>Published on:</strong> {{ mod.published.strftime('%Y-%m-%d') }}</p>
+            <p><strong>Downloads:</strong> {{ mod.downloads }}</p>
+            <p><strong>Client Side:</strong> {{ mod.client_side }}</p>
+            <p><strong>Server Side:</strong> {{ mod.server_side }}</p>
+        </div>
+    </div>
+</div>
+<div class="overrides">
+    <p><strong>Description:</strong> {{ mod.description }}</p>
+
+
+    <p><strong>Followers:</strong> {{ mod.followers }}</p>
+    <p><strong>Project Type:</strong> {{ mod.project_type }}</p>
+    <p><strong>Mod Team:</strong> {{ mod.team }}</p>
+
+
+    <p><strong>Status:</strong> {{ mod.status }}</p>
+    <p><strong>Categories:</strong> {{ mod.categories | join(', ') }}</p>
+    <p><strong>Game Versions:</strong> {{ mod.game_versions | join(', ') }}</p>
+    <p><strong>Mod Loaders:</strong> {{ mod.loaders | join(', ') }}</p>
+
+    {% if mod.issues_url %}
+        <p><a href="{{ mod.issues_url }}">Issues</a></p>
+    {% endif %}
+    {% if mod.source_url %}
+        <p><a href="{{ mod.source_url }}">Source</a></p>
+    {% endif %}
+    {% if mod.wiki_url %}
+        <p><a href="{{ mod.wiki_url }}">Wiki</a></p>
+    {% endif %}
+    {% if mod.discord_url %}
+        <p><a href="{{ mod.discord_url }}">Discord</a></p>
+    {% endif %}
+</div>
+    <!--<h2>Donation Links</h2>
+    <ul>
+        {% for donation_url in mod.donation_urls %}
+            <li><a href="{{ donation_url.url }}">{{ donation_url.platform }}</a></li>
+        {% endfor %}
+    </ul>
+
+    <h2>Gallery</h2>
+    <div>
+        {% for image in mod.gallery %}
+            <img src="{{ image.url }}" alt="{{ image.title }}" />
+            <p>{{ image.description }}</p>
+        {% endfor %}
+    </div>-->
+<h2 style="margin: 15px 0 0 0">Mod Description for {{ mod.title }}</h2>
+<hr>
+<div class="overrides banner">
+    {{ mod_desc | safe }}
+</div>
+{% endblock %}

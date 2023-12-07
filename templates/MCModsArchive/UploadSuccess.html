@@ -1,0 +1,16 @@
+{% extends 'layout.html' %}
+{% block title %}Home{% endblock title %}
+{% block main_content_header %}
+<strong>Mods can only be downloaded via the archive if the original project is no longer active</strong>
+{% endblock main_content_header %}
+{% block main_content %}
+<h2 style="margin: 0">Mods Successfully Submitted!</h2>
+<hr>
+<p>You can view the progress of the mod archival process on the mod information page</p>
+
+    <ul>
+        {% for mod in mods %}
+            <a style="text-decoration: underline;" href="/MCModsArchive/ModInformation?id={{ mod.id }}"><li>{{ mod.name }} (ID: {{ mod.id }})</li></a>
+        {% endfor %}
+    </ul>
+{% endblock %}

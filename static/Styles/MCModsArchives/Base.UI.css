@@ -1,0 +1,267 @@
+@font-face{font-family:Asap;src:url(https://cfedge-cdn.vee.city/content/kLhJNvxNYHqnH0J7zHy2/vee.city/Fonts/Asap-Regular.woff2)}
+html{background-color:#000;color:#fff;font-family:Asap}
+html a{text-decoration:none;color:#fff}html a:hover{color:grey;text-decoration:none}footer{margin-top:-35px;color:#fff}footer a{text-decoration:none;padding:0 15px;color:#fff}footer a:hover{color:grey;text-decoration:none}
+body {
+    background-color: black;
+    color: white;
+    font-family: Asap;
+    margin: 0;
+}
+
+.container {
+    width: 915px;
+    max-width: 915px;
+    margin: 0 auto;
+    height: 100%;
+}
+.main-container {
+    display: flex;
+     /* Full height of the viewport */
+}
+
+.side-bar {
+    min-width: 183px;
+    background-color: #222; /* Just for visibility */
+    /* Add more styling as needed */
+}
+.gallery-container.active {
+    cursor: grabbing;
+}
+.no-select {
+    user-select: none;
+    -moz-user-select: none; /* Firefox */
+    -webkit-user-select: none; /* Chrome/Safari */
+    -ms-user-select: none; /* IE/Edge */
+}
+.gallery-container {
+    cursor: grab;
+}
+.main-content {
+    min-width: 682px; /* Takes up the remaining space */
+    max-width: 682px; /* Takes up the remaining space */
+    background-color: #111; /* Just for visibility */
+    padding: 20px;
+    background-image: url("https://mcarchive.net/static/befc21a208813113a3ed628ba288e73c.png");
+}
+
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+
+    border-radius: 15px 15px 0 0;
+    background-image: url("https://mcarchive.net/static/b0e637858d4b9c5de2d54d3fde067c8c.png");
+}
+.spotify-login-button {
+    margin-top: 9px;
+    margin-right: 20px;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(to top, darkgreen, black);
+    padding: 10px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+        box-shadow: 0 0 2px 1px white; /* Adds a white glow around the button */
+    max-height: 10px;
+}
+
+.spotify-icon {
+    width: 20px;
+    height: auto;
+    margin-right: 5px;
+}
+
+.spotify-text-logo {
+    width: 45px;
+    height: auto;
+    margin-right: 7px;
+}
+
+.login-text {
+    margin-right: 10px;
+    color: white;
+    font-size: 16px;
+}
+.logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.app-version {
+    font-size: 12px;
+}
+.nav-links {
+    text-align: center;
+    border-right: 1px solid black;
+    height: 100%;
+    width: 4em;
+
+}
+.nav-links:hover {
+    background: linear-gradient(to bottom, #333, grey);
+    color: lightgray;
+}
+.active-link {
+    background: linear-gradient(to bottom, #333, grey);
+}
+.icon {
+    height: 25px;
+    margin-right: 8px;
+}
+.nav-links a {
+    color: white;
+    text-decoration: underline;
+}
+.lk {
+    padding: 0 5px 0 5px;
+    margin: 0;
+}
+.subtext {
+    font-size: 11px; /* Set the font size to 11px */
+    color: lightgray; /* Optional: set a different color if needed */
+    margin-left: 5px;
+}
+.subtext a {
+    text-decoration: underline;
+}
+.search-container {
+    display: flex;
+    align-items: center; /* Vertically aligns flex items */
+    justify-content: center; /* Horizontally centers the items */
+}
+
+.search-bar-input {
+    background-color: #222;
+    border-radius: 3px;
+    color: #eee;
+    font-size: 12px;
+    line-height: 1.1em;
+    padding: 5px;
+    /* Add margin-right if you want some space between the input and button */
+    margin-right: 2px; /* Example spacing */
+}
+
+.search {
+    padding: 3px;
+    margin-top: -11px;
+    cursor: pointer;
+    /* Align the button content (image) */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile button {
+    background-color: #444;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.side-bar {
+    padding: 10px 0 10px 10px;
+    background-size: 60px 60px;
+    background-image: url("/Static/Images/cobble.webp");
+}
+.gallery-container::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+}
+
+.gallery-container::-webkit-scrollbar-thumb {
+    background: darkgray;
+    border-radius: 4px;
+}
+
+.gallery-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+.gallery-container {
+    width: 100%; /* or a fixed width */
+    overflow-x: auto;
+    white-space: nowrap; /* Prevents the boxes from wrapping */
+    scrollbar-width: thin;
+    scrollbar-color: darkgray transparent;
+}
+.gallery-container-mod {
+    display: inline-block; /* Align boxes in a row */
+    margin-right: 10px;
+}
+.overrides {
+    width: 40em;
+    height: auto;
+    background-color: #555;
+    border: 3px solid grey;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 10px 10px 3px 0;
+}
+.banner img {
+    max-width: 600px;
+}
+.main-content .mod-container {
+    background-color: #555;
+    border: 3px solid grey;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 10px 10px 3px 0;
+    width: 10em;
+    height: 10em;
+}
+
+.side-bar p {
+    margin: 0px;
+    display:flex;
+    align-items: center;
+}
+.side-bar hr {
+    margin: 0 20px 8px 20px;
+}
+.side-bar h4 {
+    margin: 0;
+    text-align: center;
+}
+
+.sbi {
+    display:flex;
+    padding-left: 25px;
+    text-align: center;
+    border-radius: 15px;
+    height: 40px;
+    width: 100%;
+    background-size: 50px 50px;
+    background-image: url("/Static/Images/planks.webp");
+    align-items: center;
+}
+.sbi:hover {
+    background: linear-gradient(to top, grey, #333, grey);
+    color: lightgray;
+    text-decoration: underline;
+}
+.sbi svg {
+    fill: white;
+}
+.sbi svg:hover {
+    fill: lightgray;
+}
+.bottom-bar {
+    background-color: #111; /* Just for visibility */
+    padding: 8px 20px 20px 20px;
+    background-image: linear-gradient(to top, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0)), url('/Static/Images/bedrock_dark.webp');
+    background-size: cover, 60px 60px; /* Adjusted for both gradient and image */
+    height: 20px;
+    text-align: center;
+    align-items: center;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.loader {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid black;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  display: block;
+}

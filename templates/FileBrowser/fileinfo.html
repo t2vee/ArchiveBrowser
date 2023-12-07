@@ -45,7 +45,7 @@
           console.log('Failed to create XMLHttpRequest');
           return false;
         }
-        requests.open('POST', `/API/v1/GUI/GetDownloadLink?file_path={{ dir_path + '/' + filename }}`);
+        requests.open('POST', `/API/v1/FileBrowser/GUI/GetDownloadLink?file_path={{ dir_path + '/' + filename }}`);
         requests.send();
         requests.onreadystatechange = function() {
           if (requests.readyState === XMLHttpRequest.DONE) {

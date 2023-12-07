@@ -7,10 +7,10 @@ from fastapi.responses import FileResponse, Response
 mime = Magic(mime=True)
 logger = utils.Logger()
 skm = utils.SqlKeysManagement()
-user_api = APIRouter(prefix="/API/v1/GUI")
+file_browser_api = APIRouter(prefix="/API/v1/FileBrowser/GUI")
 
 
-@user_api.post("/GetDownloadLink")
+@file_browser_api.post("/GetDownloadLink")
 async def gen_dl_link(file_path: str = None):
     key = await skm.create()
     logger.info(
@@ -25,7 +25,7 @@ async def er(code, error_message):
     return {"code": code, "error": error_message}
 
 
-@user_api.post("/DownloadFile", response_class=FileResponse)
+@file_browser_api.post("/DownloadFile", response_class=FileResponse)
 async def download_file(file_path: str = None, __token__: str = None):
     sqlres = await skm.get(__token__)
 
@@ -58,7 +58,7 @@ async def download_file(file_path: str = None, __token__: str = None):
     )
 
 
-@user_api.post("/ArchiveSearch")
+@file_browser_api.post("/ArchiveSearch")
 async def download_file(
         response: Response,
         search_request: str = Form(...),

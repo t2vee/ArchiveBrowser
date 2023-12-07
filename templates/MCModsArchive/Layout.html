@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock title %} | MCModArchive | VeeArchives</title>
+    <link rel="stylesheet" href="/Static/Styles/MCModsArchives/Base.UI.css">
+</head>
+<body>
+    <div class="container" style="border-radius: 15px;">
+        <!-- Top Navigation Bar -->
+        <nav class="top-nav">
+            <p style="display: flex; align-items: center; margin: 0; padding: 5px 5px 5px 10px;">
+                <span><img style="height: 35px" src="https://mcarchive.net/static/logo.svg" alt="Logo"></span>
+                <span style="display: flex; flex-direction: column; align-items: start; margin-left: 5px;">
+                    <strong>MCArchive</strong>
+                    <span class="subtext">v0.0.1</span>
+                </span>
+            </p>
+
+
+            <div style="display: inline-flex;padding: 0;justify-content: center">
+                <a href="/MCModsArchive/Home"><div style="border-left: 1px solid black;" class="nav-links "><span><svg style="padding:0;margin:0;" width="25" height="25" class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-vubbuv" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="HomeIcon" fill="white"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path></svg></span><p class="lk">Home</p></div></a>
+                <a href="/MCModsArchive/Browse?All"><div class="nav-links"><span><svg fill="white" style="padding:0;margin:0;" width="25" height="25" class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-vubbuv" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="ShareOutlinedIcon"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92zM18 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM6 13c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm12 7.02c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"></path></svg></span><p class="lk">Browse</p></div></a>
+                <a href="/MCModsArchive/Stats"><div class="nav-links"><span><svg class="icon" fill="white"  focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="BarChartOutlinedIcon"><path d="M4 9h4v11H4zm12 4h4v7h-4zm-6-9h4v16h-4z"></path></svg></span><p class="lk">Stats</p></div></a>
+            </div>
+
+            <div class="search-container">
+                <div style="display: grid;text-align: center">
+                    <input class="search-bar-input" type="text" placeholder="Search...">
+                    <span class="subtext"><a href="/MCModsArchive/Search?Advanced" style="font-size: 9px;">Advanced Search</a></span>
+                </div>
+                <button class="search"><img style="width: 15px;" src="/Static/Images/search.svg" alt="Search"></button>
+            </div>
+            <a href="/MCModsArchive/UploadNewContent"><div class="spotify-login-button">
+                <img class="spotify-text-logo" src="/Static/Images/MinecraftGrassBlock.webp" alt="Spotify">
+                <span class="login-text">Submit New Content</span>
+                <svg fill="white" class="spotify-icon" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                     viewBox="0 0 374.116 374.116" xml:space="preserve">
+                <g>
+                    <path d="M344.058,207.506c-16.568,0-30,13.432-30,30v76.609h-254v-76.609c0-16.568-13.432-30-30-30c-16.568,0-30,13.432-30,30
+                        v106.609c0,16.568,13.432,30,30,30h314c16.568,0,30-13.432,30-30V237.506C374.058,220.938,360.626,207.506,344.058,207.506z"/>
+                    <path d="M123.57,135.915l33.488-33.488v111.775c0,16.568,13.432,30,30,30c16.568,0,30-13.432,30-30V102.426l33.488,33.488
+                        c5.857,5.858,13.535,8.787,21.213,8.787c7.678,0,15.355-2.929,21.213-8.787c11.716-11.716,11.716-30.71,0-42.426L208.271,8.788
+                        c-11.715-11.717-30.711-11.717-42.426,0L81.144,93.489c-11.716,11.716-11.716,30.71,0,42.426
+                        C92.859,147.631,111.855,147.631,123.57,135.915z"/>
+                </g>
+                </svg>
+            </div></a>
+        </nav>
+        <div class="main-container">
+            <aside class="side-bar">
+                <br>
+                <h4>Welcome to the</h4>
+                <h4>MCModsArchive!</h4>
+                <hr>
+                <p style="padding: 10px">This Archive is for the preservation of mods and other Minecraft content. All submitted content is obtained from 3rd party sites like CurseForge or Modrinth instead of being user-uploaded.</p>
+                <br>
+                <h4>External Links</h4>
+                <hr>
+                <a href="/"><div class="sbi"><p><span><svg class="icon" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="ShareOutlinedIcon"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92zM18 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM6 13c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm12 7.02c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"></path></svg></span>About</p></div></a>
+                <a href="/FileBrowser/Home"><div class="sbi"><p><span><svg class="icon" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="ShareOutlinedIcon"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92zM18 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM6 13c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm12 7.02c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"></path></svg></span>Browse Files</p></div></a>
+                <a href="https://vee.city"><div class="sbi"><p><span><svg class="icon" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="ShareOutlinedIcon"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92zM18 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM6 13c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm12 7.02c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"></path></svg></span>Vee.City</p></div></a>
+                <br>
+                <h4>Archive Center</h4>
+                <hr>
+                <a href="/ArchiveCenter/Explore"><div class="sbi"><p><span><svg class="icon" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="ShareOutlinedIcon"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92zM18 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM6 13c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm12 7.02c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"></path></svg></span>Explore Archives</p></div></a>
+                <a href="/ArchiveCenter/Bugzilla"><div class="sbi"><p><span><svg class="icon" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="ShareOutlinedIcon"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92zM18 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM6 13c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm12 7.02c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"></path></svg></span>Submit Issues</p></div></a>
+                <a href="/ArchiveCenter/ReportContent"><div class="sbi"><p><span><svg class="icon" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="SettingsIcon"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"></path></svg></span>Report Content</p></div></a>
+                <a href="/ArchiveCenter/API"><div class="sbi"><p><span><svg class="icon" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="ExitToAppIcon"><path d="M10.09 15.59 11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"></path></svg></span>Archive API</p></div></a>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <nav class="top-nav" style="border-radius: 15px;padding:5px;background-image: url('/Static/Images/planks.webp');background-size: 50px 50px;">
+                    {% block main_content_header %}{% endblock main_content_header %}
+                </nav>
+                <br>
+                {% block main_content %}{% endblock main_content %}
+            </main>
+        </div>
+        <div class="bottom-bar">
+            <img src="https://cfedge-cdn.vee.city/content/kLhJNvxNYHqnH0J7zHy2/vee.city/Images/Optimised/vEE.webp" width="50px">
+            <div>
+                <p style="margin-top: -15px;color:grey;display: inline-flex;font-size: 13px;">Operated and Maintained by Vee for the VeeArchives. Running&nbsp;<span><a href="https://github.com/t2vee/ArchiveBrowser">ArchiveBrowser</a>@<a href="https://github.com/t2vee/ArchiveBrowser/tree/f48b00ff99ccc46b0b45591f10310c4b56c938f0">f48b00f</a></span></p>
+                <p style="margin-top: -15px;color:grey;font-size: 13px;"> Not a official Minecraft product. Not approved or associated with Mojang AB. </p>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="/Static/Scripts/MCA.UI.Gallery.js"></script>
+</html>

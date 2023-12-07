@@ -28,7 +28,7 @@
       const request = new XMLHttpRequest();
 
       request.responseType = "blob";
-      request.open('POST', `/API/v1/GUI/DownloadFile?file_path={{ file_path }}&__token__={{ __token__ }}`);
+      request.open('POST', `/API/v1/FileBrowser/GUI/DownloadFile?file_path={{ file_path }}&__token__={{ __token__ }}`);
       request.send();
 
       request.onreadystatechange = function () {

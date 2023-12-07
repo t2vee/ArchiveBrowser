@@ -13,7 +13,7 @@
             }
 
             // POST data to the server
-            fetch('/API/v1/GUI/ArchiveSearch', {
+            fetch('/API/v1/FileBrowser/GUI/ArchiveSearch', {
                 method: 'POST',
                 body: searchParams,
                 headers: {
@@ -23,7 +23,7 @@
               .then(data => {
                 let resultsHtml = '<ul>';
                 for (const result of data) {
-                    resultsHtml += `<li><a href="/Pub/FileInfo?file_path=${result}">${result}</a></li>`;
+                    resultsHtml += `<li><a href="/FileBrowser/FileInfo?file_path=${result}">${result}</a></li>`;
                 }
                 resultsHtml += '</ul>';
 

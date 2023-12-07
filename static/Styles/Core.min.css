@@ -4,12 +4,11 @@
   justify-content: flex-start;
   height: 90vh;
   overflow-y: auto;
-  width:32em;
+  width:36em;
 }.overlaypage{margin:1rem auto;width:20em;height:535px;max-width:95vw;text-align:center;padding:20px;border:1px solid #fff;border-radius:15px;user-select:none!important}.social{border:1px solid #fff;width:150px;padding:7px 0}.logo{margin-bottom:10px;height:100px}main{border:1px solid #fff;margin-bottom:5px}.link-list{justify-content:space-between;margin:10px 0 20px}.contact{justify-content:space-between;margin:10px 0}.row{display:flex;justify-content:space-between;margin:30px 0}#social{cursor:pointer}#close{cursor:pointer;font-size:30px}footer{margin-top:-8px;color:#777778}
 header, footer {
   flex-shrink: 0;  /* Prevent them from shrinking */
 }
 main {
-  flex-grow: 1;
   overflow-y: auto;
 }
