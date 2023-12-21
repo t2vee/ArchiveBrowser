@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from Database import get_db, ModBasedUponModrinthMetaData
 from typing import List, Dict
 
+
 def _get_modrinth_mod_id_from_url(mod_link: str):
     """
     Extracts the mod ID/slug from the Modrinth mod URL.
@@ -50,6 +51,7 @@ def _get_curseforge_mod_id_from_url(mod_link: str):
     # Placeholder implementation
     # Replace with actual logic to extract or resolve the mod ID from the URL
     return None
+
 
 def _validate_and_get_curseforge_mod_metadata(mod_link: str):
     """
@@ -114,7 +116,6 @@ async def get_mod_details_from_slugs(slugs: str, db: Session) -> List[Dict[str, 
     :return: List of dictionaries containing mod IDs and names.
     """
     slug_list = slugs.split(',')
-    mod_details = db.query(ModBasedUponModrinthMetaData.id, ModBasedUponModrinthMetaData.title).filter(ModBasedUponModrinthMetaData.slug.in_(slug_list)).all()
+    mod_details = db.query(ModBasedUponModrinthMetaData.id, ModBasedUponModrinthMetaData.title).filter(
+        ModBasedUponModrinthMetaData.slug.in_(slug_list)).all()
     return [{"id": mod_id, "name": mod_title} for mod_id, mod_title in mod_details]
-
-

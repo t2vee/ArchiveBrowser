@@ -54,6 +54,7 @@ class ModBasedUponModrinthMetaData(Base):
     color = Column(Integer)
     thread_id = Column(String)
     monetization_status = Column(String)
+    date_metadata_fetched = Column(DateTime)
 
     def __repr__(self):
         return f"<ModBasedUponModrinthMetaData(title='{self.title}', id='{self.id}')>"
@@ -94,5 +95,6 @@ class ModBasedUponModrinthMetaData(Base):
             gallery=json.dumps(json_data['gallery']),
             color=json_data['color'],
             thread_id=json_data['thread_id'],
-            monetization_status=json_data['monetization_status']
+            monetization_status=json_data['monetization_status'],
+            date_metadata_fetched=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         )
